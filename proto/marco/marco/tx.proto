@@ -1,0 +1,16 @@
+syntax = "proto3";
+package marco.marco;
+
+option go_package = "github.com/vuong177/marco/x/marco/types";
+
+// Msg defines the Msg service.
+service Msg {
+  rpc MintStable(MsgMintStable) returns (MsgMintStableResponse);
+  rpc WithdrawCollateral(MsgMintStable) returns (MsgMintStableResponse);
+
+}
+
+message MsgMintStable {}
+
+message MsgMintStableResponse {}
+
