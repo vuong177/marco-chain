@@ -4,7 +4,7 @@ package marco.marco;
 import "gogoproto/gogo.proto";
 import "marco/marco/params.proto";
 
-option go_package = "github.com/vuong177/marco/x/marco/types";
+option go_package = "x/marco/types";
 
 // GenesisState defines the marco module's genesis state.
 message GenesisState {

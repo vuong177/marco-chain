@@ -1,16 +1,39 @@
 syntax = "proto3";
 package marco.marco;
 
-option go_package = "github.com/vuong177/marco/x/marco/types";
+option go_package = "x/marco/types";
+
+import "gogoproto/gogo.proto";
 
 // Msg defines the Msg service.
 service Msg {
   rpc MintStable(MsgMintStable) returns (MsgMintStableResponse);
-  rpc WithdrawCollateral(MsgMintStable) returns (MsgMintStableResponse);
+  rpc WithdrawCollateral(MsgWithdrawCollateral) returns (MsgWithdrawCollateralResponse);
 
 }
 
-message MsgMintStable {}
+message MsgMintStable {
+  // minter
+  string minter = 1 [(gogoproto.moretags) = "yaml:\"minter\"" ];
+  // collateral asset
+  string collateral_asset = 2 [
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Coin",
+    (gogoproto.moretags) = "yaml:\"staking\"",
+    (gogoproto.nullable) = false
+  ]; 
+}
 
 message MsgMintStableResponse {}
 
+message MsgWithdrawCollateral {
+  // minter
+  string minter = 1 [(gogoproto.moretags) = "yaml:\"minter\"" ];
+  // collateral asset
+  string collateral_asset = 2 [
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Coin",
+    (gogoproto.moretags) = "yaml:\"staking\"",
+    (gogoproto.nullable) = false
+  ]; 
+}
+
+message MsgWithdrawCollateralResponse {}
