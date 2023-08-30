@@ -7,12 +7,12 @@ import "gogoproto/gogo.proto";
 
 // Msg defines the Msg service.
 service Msg {
-  rpc MintStable(MsgMintStable) returns (MsgMintStableResponse);
+  rpc MintStableCoin(MsgMintStableCoin) returns (MsgMintStableCoinResponse);
   rpc WithdrawCollateral(MsgWithdrawCollateral) returns (MsgWithdrawCollateralResponse);
 
 }
 
-message MsgMintStable {
+message MsgMintStableCoin {
   // minter
   string minter = 1 [(gogoproto.moretags) = "yaml:\"minter\"" ];
   // collateral asset
@@ -23,7 +23,7 @@ message MsgMintStable {
   ]; 
 }
 
-message MsgMintStableResponse {}
+message MsgMintStableCoinResponse {}
 
 message MsgWithdrawCollateral {
   // minter
