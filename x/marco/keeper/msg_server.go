@@ -1,6 +1,8 @@
 package keeper
 
 import (
+	"context"
+
 	"github.com/vuong177/marco/x/marco/types"
 )
 
@@ -15,3 +17,11 @@ func NewMsgServerImpl(keeper Keeper) types.MsgServer {
 }
 
 var _ types.MsgServer = msgServer{}
+
+func (s msgServer) MintStableCoin(goCtx context.Context, msg *types.MsgMintStableCoin) (*types.MsgMintStableCoinResponse, error) {
+	return nil, nil
+}
+
+func (s msgServer) WithdrawCollateral(goCtx context.Context, msg *types.MsgWithdrawCollateral) (*types.MsgWithdrawCollateralResponse, error) {
+	return nil, nil
+}

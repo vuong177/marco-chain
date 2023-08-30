@@ -6,27 +6,50 @@ import (
 
 // constants
 const (
-	TypeMsgCreateGauge = "create_gauge"
-	TypeMsgAddToGauge  = "add_to_gauge"
+	TypeMsgMintStable      = "mint_stable_coin"
+	TypeWithdrawCollateral = "withdraw_collateral"
 )
 
-var _ sdk.Msg = &MsgMintStable{}
+var _ sdk.Msg = &MsgMintStableCoin{}
 
 // MsgMintStable creates a message to mint stable coin
-func NewMsgMintStable() *MsgMintStable {
-	return &MsgMintStable{}
+func NewMsgMintStable() *MsgMintStableCoin {
+	return &MsgMintStableCoin{}
 }
 
-func (m MsgMintStable) Route() string { return RouterKey }
-func (m MsgMintStable) Type() string  { return TypeMsgCreateGauge }
-func (m MsgMintStable) ValidateBasic() error {
+func (m MsgMintStableCoin) Route() string { return RouterKey }
+func (m MsgMintStableCoin) Type() string  { return TypeMsgMintStable }
+func (m MsgMintStableCoin) ValidateBasic() error {
 	return nil
 }
 
-func (m MsgMintStable) GetSignBytes() []byte {
+func (m MsgMintStableCoin) GetSignBytes() []byte {
 	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(&m))
 }
-func (m MsgMintStable) GetSigners() []sdk.AccAddress {
-	owner, _ := sdk.AccAddressFromBech32(m.Owner)
-	return []sdk.AccAddress{owner}
+func (m MsgMintStableCoin) GetSigners() []sdk.AccAddress {
+	minter, _ := sdk.AccAddressFromBech32(m.Minter)
+	return []sdk.AccAddress{minter}
+}
+
+var _ sdk.Msg = &MsgWithdrawCollateral{}
+
+// MsgMintStable creates a message to mint stable coin
+func NewWithdrawCollateral() *MsgWithdrawCollateral {
+	return &MsgWithdrawCollateral{}
+}
+
+func (m MsgWithdrawCollateral) Route() string { return RouterKey }
+func (m MsgWithdrawCollateral) Type() string  { return TypeMsgMintStable }
+
+func (m MsgWithdrawCollateral) ValidateBasic() error {
+	return nil
+}
+
+func (m MsgWithdrawCollateral) GetSignBytes() []byte {
+	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(&m))
+}
+
+func (m MsgWithdrawCollateral) GetSigners() []sdk.AccAddress {
+	minter, _ := sdk.AccAddressFromBech32(m.Minter)
+	return []sdk.AccAddress{minter}
 }
