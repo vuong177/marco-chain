@@ -1,4 +1,4 @@
-package marco_test
+package macro_test
 
 import (
 	"testing"
@@ -6,8 +6,8 @@ import (
 	"github.com/stretchr/testify/require"
 	keepertest "github.com/vuong177/macro/testutil/keeper"
 	"github.com/vuong177/macro/testutil/nullify"
-	"github.com/vuong177/macro/x/marco"
-	"github.com/vuong177/macro/x/marco/types"
+	"github.com/vuong177/macro/x/macro"
+	"github.com/vuong177/macro/x/macro/types"
 )
 
 func TestGenesis(t *testing.T) {
@@ -18,8 +18,8 @@ func TestGenesis(t *testing.T) {
 	}
 
 	k, ctx := keepertest.MarcoKeeper(t)
-	marco.InitGenesis(ctx, *k, genesisState)
-	got := marco.ExportGenesis(ctx, *k)
+	macro.InitGenesis(ctx, *k, genesisState)
+	got := macro.ExportGenesis(ctx, *k)
 	require.NotNil(t, got)
 
 	nullify.Fill(&genesisState)

@@ -1,4 +1,4 @@
-package marco
+package macro
 
 import (
 	"context"
@@ -17,9 +17,9 @@ import (
 	cdctypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
-	"github.com/vuong177/macro/x/marco/client/cli"
-	"github.com/vuong177/macro/x/marco/keeper"
-	"github.com/vuong177/macro/x/marco/types"
+	"github.com/vuong177/macro/x/macro/client/cli"
+	"github.com/vuong177/macro/x/macro/keeper"
+	"github.com/vuong177/macro/x/macro/types"
 )
 
 var (

@@ -5,12 +5,11 @@ import (
 	// "strings"
 
 	"github.com/spf13/cobra"
+	"github.com/vuong177/macro/x/macro/types"
 
 	"github.com/cosmos/cosmos-sdk/client"
 	// "github.com/cosmos/cosmos-sdk/client/flags"
 	// sdk "github.com/cosmos/cosmos-sdk/types"
-
-	"github.com/vuong177/macro/x/marco/types"
 )
 
 // GetQueryCmd returns the cli query commands for this module

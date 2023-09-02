@@ -1,4 +1,4 @@
-package marco
+package macro
 
 import (
 	"math/rand"
@@ -9,8 +9,8 @@ import (
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
 	"github.com/vuong177/macro/testutil/sample"
-	marcosimulation "github.com/vuong177/macro/x/marco/simulation"
-	"github.com/vuong177/macro/x/marco/types"
+	marcosimulation "github.com/vuong177/macro/x/macro/simulation"
+	"github.com/vuong177/macro/x/macro/types"
 )
 
 // avoid unused import issue

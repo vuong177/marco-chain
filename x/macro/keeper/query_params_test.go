@@ -6,7 +6,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/require"
 	testkeeper "github.com/vuong177/macro/testutil/keeper"
-	"github.com/vuong177/macro/x/marco/types"
+	"github.com/vuong177/macro/x/macro/types"
 )
 
 func TestParamsQuery(t *testing.T) {

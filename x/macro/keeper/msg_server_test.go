@@ -7,8 +7,8 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/require"
 	keepertest "github.com/vuong177/macro/testutil/keeper"
-	"github.com/vuong177/macro/x/marco/keeper"
-	"github.com/vuong177/macro/x/marco/types"
+	"github.com/vuong177/macro/x/macro/keeper"
+	"github.com/vuong177/macro/x/macro/types"
 )
 
 func setupMsgServer(t testing.TB) (types.MsgServer, context.Context) {

@@ -3,7 +3,7 @@ package keeper
 import (
 	"context"
 
-	"github.com/vuong177/macro/x/marco/types"
+	"github.com/vuong177/macro/x/macro/types"
 )
 
 type msgServer struct {

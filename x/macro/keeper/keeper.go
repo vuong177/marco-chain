@@ -9,7 +9,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 
-	"github.com/vuong177/macro/x/marco/types"
+	"github.com/vuong177/macro/x/macro/types"
 )
 
 type (
