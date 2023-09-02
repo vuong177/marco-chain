@@ -8,9 +8,9 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/module"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
-	"github.com/vuong177/marco/testutil/sample"
-	marcosimulation "github.com/vuong177/marco/x/marco/simulation"
-	"github.com/vuong177/marco/x/marco/types"
+	"github.com/vuong177/macro/testutil/sample"
+	marcosimulation "github.com/vuong177/macro/x/marco/simulation"
+	"github.com/vuong177/macro/x/marco/types"
 )
 
 // avoid unused import issue

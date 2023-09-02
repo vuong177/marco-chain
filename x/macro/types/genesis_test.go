@@ -4,7 +4,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
-	"github.com/vuong177/marco/x/marco/types"
+	"github.com/vuong177/macro/x/marco/types"
 )
 
 func TestGenesisState_Validate(t *testing.T) {

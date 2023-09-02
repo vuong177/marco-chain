@@ -2,8 +2,8 @@ package marco
 
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/vuong177/marco/x/marco/keeper"
-	"github.com/vuong177/marco/x/marco/types"
+	"github.com/vuong177/macro/x/marco/keeper"
+	"github.com/vuong177/macro/x/marco/types"
 )
 
 // InitGenesis initializes the module's state from a provided genesis state.

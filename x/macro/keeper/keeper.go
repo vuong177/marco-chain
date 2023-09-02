@@ -9,7 +9,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 
-	"github.com/vuong177/marco/x/marco/types"
+	"github.com/vuong177/macro/x/marco/types"
 )
 
 type (
@@ -43,4 +43,8 @@ func NewKeeper(
 
 func (k Keeper) Logger(ctx sdk.Context) log.Logger {
 	return ctx.Logger().With("module", fmt.Sprintf("x/%s", types.ModuleName))
+}
+
+func (k Keeper) executeMintStableCoin(ctx sdk.Context, collateralAsset sdk.Coin) {
+
 }

@@ -1,4 +1,4 @@
-module github.com/vuong177/marco
+module github.com/vuong177/macro
 
 go 1.19
 

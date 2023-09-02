@@ -6,8 +6,8 @@ import (
 	"github.com/cosmos/cosmos-sdk/server"
 	svrcmd "github.com/cosmos/cosmos-sdk/server/cmd"
 
-	"github.com/vuong177/marco/app"
-	"github.com/vuong177/marco/cmd/marcod/cmd"
+	"github.com/vuong177/macro/app"
+	"github.com/vuong177/macro/cmd/marcod/cmd"
 )
 
 func main() {

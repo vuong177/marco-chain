@@ -4,10 +4,10 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
-	keepertest "github.com/vuong177/marco/testutil/keeper"
-	"github.com/vuong177/marco/testutil/nullify"
-	"github.com/vuong177/marco/x/marco"
-	"github.com/vuong177/marco/x/marco/types"
+	keepertest "github.com/vuong177/macro/testutil/keeper"
+	"github.com/vuong177/macro/testutil/nullify"
+	"github.com/vuong177/macro/x/marco"
+	"github.com/vuong177/macro/x/marco/types"
 )
 
 func TestGenesis(t *testing.T) {

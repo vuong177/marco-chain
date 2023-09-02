@@ -110,13 +110,14 @@ import (
 	ibctm "github.com/cosmos/ibc-go/v7/modules/light-clients/07-tendermint"
 	"github.com/spf13/cast"
 
-	marcomodule "github.com/vuong177/marco/x/marco"
-	marcomodulekeeper "github.com/vuong177/marco/x/marco/keeper"
-	marcomoduletypes "github.com/vuong177/marco/x/marco/types"
+	marcomodule "github.com/vuong177/macro/x/marco"
+	marcomodulekeeper "github.com/vuong177/macro/x/marco/keeper"
+	marcomoduletypes "github.com/vuong177/macro/x/marco/types"
+
 	// this line is used by starport scaffolding # stargate/app/moduleImport
 
-	appparams "github.com/vuong177/marco/app/params"
-	"github.com/vuong177/marco/docs"
+	appparams "github.com/vuong177/macro/app/params"
+	"github.com/vuong177/macro/docs"
 )
 
 const (

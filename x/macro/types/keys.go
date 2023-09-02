@@ -14,6 +14,11 @@ const (
 	MemStoreKey = "mem_marco"
 )
 
+var (
+	// KeyCollateralAsset defines key for CollateralAsset
+	KeyCollateralAsset = []byte{0x01}
+)
+
 func KeyPrefix(p string) []byte {
 	return []byte(p)
 }

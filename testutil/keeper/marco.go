@@ -13,8 +13,8 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	typesparams "github.com/cosmos/cosmos-sdk/x/params/types"
 	"github.com/stretchr/testify/require"
-	"github.com/vuong177/marco/x/marco/keeper"
-	"github.com/vuong177/marco/x/marco/types"
+	"github.com/vuong177/macro/x/marco/keeper"
+	"github.com/vuong177/macro/x/marco/types"
 )
 
 func MarcoKeeper(t testing.TB) (*keeper.Keeper, sdk.Context) {

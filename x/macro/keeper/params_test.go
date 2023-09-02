@@ -4,8 +4,8 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
-	testkeeper "github.com/vuong177/marco/testutil/keeper"
-	"github.com/vuong177/marco/x/marco/types"
+	testkeeper "github.com/vuong177/macro/testutil/keeper"
+	"github.com/vuong177/macro/x/marco/types"
 )
 
 func TestGetParams(t *testing.T) {
