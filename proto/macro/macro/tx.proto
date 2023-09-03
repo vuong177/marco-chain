@@ -7,18 +7,32 @@ import "gogoproto/gogo.proto";
 
 // Msg defines the Msg service.
 service Msg {
+  rpc Deposit(MsgDeposit) returns (MsgDepositResponse);
   rpc MintStableCoin(MsgMintStableCoin) returns (MsgMintStableCoinResponse);
   rpc WithdrawCollateral(MsgWithdrawCollateral) returns (MsgWithdrawCollateralResponse);
 
 }
 
+message MsgDeposit {
+  // minter
+  string from_address = 1 [(gogoproto.moretags) = "yaml:\"from_address\"" ];
+  // collateral asset
+  string deposit_coin = 2 [
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Coin",
+    (gogoproto.moretags) = "yaml:\"deposit_coin\"",
+    (gogoproto.nullable) = false
+  ]; 
+}
+
+message MsgDepositResponse {}
+
 message MsgMintStableCoin {
   // minter
   string minter = 1 [(gogoproto.moretags) = "yaml:\"minter\"" ];
   // collateral asset
-  string collateral_asset = 2 [
-    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Coin",
-    (gogoproto.moretags) = "yaml:\"staking\"",
+  string request_amount = 2 [
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.moretags) = "yaml:\"request_amount\"",
     (gogoproto.nullable) = false
   ]; 
 }
