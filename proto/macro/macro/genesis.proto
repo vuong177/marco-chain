@@ -1,10 +1,10 @@
 syntax = "proto3";
-package marco.marco;
+package macro.macro;
 
 import "gogoproto/gogo.proto";
-import "marco/marco/params.proto";
+import "macro/macro/params.proto";
 
-option go_package = "github.com/vuong177/macro/x/marco/types";
+option go_package = "github.com/vuong177/macro/x/macro/types";
 
 // GenesisState defines the marco module's genesis state.
 message GenesisState {
