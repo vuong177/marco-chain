@@ -1,0 +1,22 @@
+syntax = "proto3";
+package macro.macro;
+
+import "gogoproto/gogo.proto";
+
+option go_package = "x/macro/types";
+
+// GenesisState defines the macro module's genesis state.
+message CollateralData {
+  string collateral_asset = 1 [
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Coin",
+    (gogoproto.moretags) = "yaml:\"collateral_asset\"", 
+    (gogoproto.nullable) = false
+  ];
+
+  // minted_stable_coin is the number of minted stable coin that mortgage by assets
+  string minted_stable_coin = 2 [
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.moretags) = "yaml:\"minted_stable_coin\"",
+    (gogoproto.nullable) = false
+  ];
+}

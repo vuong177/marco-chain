@@ -1,18 +1,18 @@
 syntax = "proto3";
-package marco.marco;
+package macro.macro;
 
 import "gogoproto/gogo.proto";
 import "google/api/annotations.proto";
 import "cosmos/base/query/v1beta1/pagination.proto";
-import "marco/marco/params.proto";
+import "macro/macro/params.proto";
 
-option go_package = "github.com/vuong177/macro/x/marco/types";
+option go_package = "x/macro/types";
 
 // Query defines the gRPC querier service.
 service Query {
   // Parameters queries the parameters of the module.
   rpc Params(QueryParamsRequest) returns (QueryParamsResponse) {
-    option (google.api.http).get = "/vuong177/marco/marco/params";
+    option (google.api.http).get = "/vuong177/macro/macro/params";
   }
 }
 

@@ -1,9 +1,9 @@
 syntax = "proto3";
-package marco.marco;
+package macro.macro;
 
 import "gogoproto/gogo.proto";
 
-option go_package = "github.com/vuong177/macro/x/marco/types";
+option go_package = "x/macro/types";
 
 // Params defines the parameters for the module.
 message Params {
