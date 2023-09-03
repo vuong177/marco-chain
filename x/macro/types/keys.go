@@ -1,5 +1,9 @@
 package types
 
+import (
+	sdk "github.com/cosmos/cosmos-sdk/types"
+)
+
 const (
 	// ModuleName defines the module name
 	ModuleName = "marco"
@@ -16,9 +20,21 @@ const (
 
 var (
 	// KeyCollateralAsset defines key for CollateralAsset
-	KeyCollateralAsset = []byte{0x01}
+	KeyCollateralAssetData = []byte{0x01}
+
+	// KeyCollateralAsset defines key for CollateralAsset
+	KeyCollateralAssetRateSecondaryIndex = []byte{0x02}
 )
 
 func KeyPrefix(p string) []byte {
 	return []byte(p)
+}
+
+func GetKeyCollateralAssetData(address sdk.AccAddress, tokenIndex []byte) []byte {
+	bz := append(KeyCollateralAssetData, tokenIndex...)
+	return append(bz, address...)
+}
+
+func GetKeyAddressCollateralAssetSecondaryIndex(address sdk.AccAddress, rate sdk.Dec) []byte {
+	return append(KeyCollateralAssetRateSecondaryIndex, address...)
 }
