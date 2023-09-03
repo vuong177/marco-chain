@@ -6,7 +6,7 @@ import "macro/macro/params.proto";
 
 option go_package = "github.com/vuong177/macro/x/macro/types";
 
-// GenesisState defines the marco module's genesis state.
+// GenesisState defines the macro module's genesis state.
 message GenesisState {
   Params params = 1 [(gogoproto.nullable) = false];
 }

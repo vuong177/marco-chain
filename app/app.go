@@ -110,9 +110,9 @@ import (
 	ibctm "github.com/cosmos/ibc-go/v7/modules/light-clients/07-tendermint"
 	"github.com/spf13/cast"
 
-	marcomodule "github.com/vuong177/macro/x/macro"
-	marcomodulekeeper "github.com/vuong177/macro/x/macro/keeper"
-	marcomoduletypes "github.com/vuong177/macro/x/macro/types"
+	macromodule "github.com/vuong177/macro/x/macro"
+	macromodulekeeper "github.com/vuong177/macro/x/macro/keeper"
+	macromoduletypes "github.com/vuong177/macro/x/macro/types"
 
 	// this line is used by starport scaffolding # stargate/app/moduleImport
 
@@ -122,7 +122,7 @@ import (
 
 const (
 	AccountAddressPrefix = "cosmos"
-	Name                 = "marco"
+	Name                 = "macro"
 )
 
 // this line is used by starport scaffolding # stargate/wasm/app/enabledProposals
@@ -174,7 +174,7 @@ var (
 		ica.AppModuleBasic{},
 		vesting.AppModuleBasic{},
 		consensus.AppModuleBasic{},
-		marcomodule.AppModuleBasic{},
+		macromodule.AppModuleBasic{},
 		// this line is used by starport scaffolding # stargate/app/moduleBasic
 	)
 
@@ -250,7 +250,7 @@ type App struct {
 	ScopedTransferKeeper capabilitykeeper.ScopedKeeper
 	ScopedICAHostKeeper  capabilitykeeper.ScopedKeeper
 
-	MarcoKeeper marcomodulekeeper.Keeper
+	MacroKeeper macromodulekeeper.Keeper
 	// this line is used by starport scaffolding # stargate/app/keeperDeclaration
 
 	// mm is the module manager
@@ -297,7 +297,7 @@ func New(
 		govtypes.StoreKey, paramstypes.StoreKey, ibcexported.StoreKey, upgradetypes.StoreKey,
 		feegrant.StoreKey, evidencetypes.StoreKey, ibctransfertypes.StoreKey, icahosttypes.StoreKey,
 		capabilitytypes.StoreKey, group.StoreKey, icacontrollertypes.StoreKey, consensusparamtypes.StoreKey,
-		marcomoduletypes.StoreKey,
+		macromoduletypes.StoreKey,
 		// this line is used by starport scaffolding # stargate/app/storeKey
 	)
 	tkeys := sdk.NewTransientStoreKeys(paramstypes.TStoreKey)
@@ -520,13 +520,13 @@ func New(
 		),
 	)
 
-	app.MarcoKeeper = *marcomodulekeeper.NewKeeper(
+	app.MacroKeeper = *macromodulekeeper.NewKeeper(
 		appCodec,
-		keys[marcomoduletypes.StoreKey],
-		keys[marcomoduletypes.MemStoreKey],
-		app.GetSubspace(marcomoduletypes.ModuleName),
+		keys[macromoduletypes.StoreKey],
+		keys[macromoduletypes.MemStoreKey],
+		app.GetSubspace(macromoduletypes.ModuleName),
 	)
-	marcoModule := marcomodule.NewAppModule(appCodec, app.MarcoKeeper, app.AccountKeeper, app.BankKeeper)
+	macroModule := macromodule.NewAppModule(appCodec, app.MacroKeeper, app.AccountKeeper, app.BankKeeper)
 
 	// this line is used by starport scaffolding # stargate/app/keeperDefinition
 
@@ -589,7 +589,7 @@ func New(
 		params.NewAppModule(app.ParamsKeeper),
 		transferModule,
 		icaModule,
-		marcoModule,
+		macroModule,
 		// this line is used by starport scaffolding # stargate/app/appModule
 
 		crisis.NewAppModule(app.CrisisKeeper, skipGenesisInvariants, app.GetSubspace(crisistypes.ModuleName)), // always be last to make sure that it checks for all invariants and not only part of them
@@ -622,7 +622,7 @@ func New(
 		paramstypes.ModuleName,
 		vestingtypes.ModuleName,
 		consensusparamtypes.ModuleName,
-		marcomoduletypes.ModuleName,
+		macromoduletypes.ModuleName,
 		// this line is used by starport scaffolding # stargate/app/beginBlockers
 	)
 
@@ -648,7 +648,7 @@ func New(
 		upgradetypes.ModuleName,
 		vestingtypes.ModuleName,
 		consensusparamtypes.ModuleName,
-		marcomoduletypes.ModuleName,
+		macromoduletypes.ModuleName,
 		// this line is used by starport scaffolding # stargate/app/endBlockers
 	)
 
@@ -679,7 +679,7 @@ func New(
 		upgradetypes.ModuleName,
 		vestingtypes.ModuleName,
 		consensusparamtypes.ModuleName,
-		marcomoduletypes.ModuleName,
+		macromoduletypes.ModuleName,
 		// this line is used by starport scaffolding # stargate/app/initGenesis
 	}
 	app.mm.SetOrderInitGenesis(genesisModuleOrder...)
@@ -904,7 +904,7 @@ func initParamsKeeper(appCodec codec.BinaryCodec, legacyAmino *codec.LegacyAmino
 	paramsKeeper.Subspace(ibcexported.ModuleName)
 	paramsKeeper.Subspace(icacontrollertypes.SubModuleName)
 	paramsKeeper.Subspace(icahosttypes.SubModuleName)
-	paramsKeeper.Subspace(marcomoduletypes.ModuleName)
+	paramsKeeper.Subspace(macromoduletypes.ModuleName)
 	// this line is used by starport scaffolding # stargate/app/paramSubspace
 
 	return paramsKeeper

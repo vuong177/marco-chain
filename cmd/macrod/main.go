@@ -7,7 +7,7 @@ import (
 	svrcmd "github.com/cosmos/cosmos-sdk/server/cmd"
 
 	"github.com/vuong177/macro/app"
-	"github.com/vuong177/macro/cmd/marcod/cmd"
+	"github.com/vuong177/macro/cmd/macrod/cmd"
 )
 
 func main() {

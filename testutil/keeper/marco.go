@@ -17,7 +17,7 @@ import (
 	"github.com/vuong177/macro/x/macro/types"
 )
 
-func MarcoKeeper(t testing.TB) (*keeper.Keeper, sdk.Context) {
+func MacroKeeper(t testing.TB) (*keeper.Keeper, sdk.Context) {
 	storeKey := sdk.NewKVStoreKey(types.StoreKey)
 	memStoreKey := storetypes.NewMemoryStoreKey(types.MemStoreKey)
 
@@ -34,7 +34,7 @@ func MarcoKeeper(t testing.TB) (*keeper.Keeper, sdk.Context) {
 		types.Amino,
 		storeKey,
 		memStoreKey,
-		"MarcoParams",
+		"MacroParams",
 	)
 	k := keeper.NewKeeper(
 		cdc,

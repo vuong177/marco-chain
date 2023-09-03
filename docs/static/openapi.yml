@@ -46437,10 +46437,10 @@ paths:
                         }
       tags:
         - Query
-  /vuong177/marco/marco/params:
+  /vuong177/macro/macro/params:
     get:
       summary: Parameters queries the parameters of the module.
-      operationId: MarcoMarcoParams
+      operationId: MacroMacroParams
       responses:
         '200':
           description: A successful response.
@@ -75212,10 +75212,10 @@ definitions:
     description: |-
       Version defines the versioning scheme used to negotiate the IBC verison in
       the connection handshake.
-  marco.marco.Params:
+  macro.macro.Params:
     type: object
     description: Params defines the parameters for the module.
-  marco.marco.QueryParamsResponse:
+  macro.macro.QueryParamsResponse:
     type: object
     properties:
       params:
