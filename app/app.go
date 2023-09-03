@@ -524,6 +524,7 @@ func New(
 		appCodec,
 		keys[marcomoduletypes.StoreKey],
 		keys[marcomoduletypes.MemStoreKey],
+		app.BankKeeper,
 		app.GetSubspace(marcomoduletypes.ModuleName),
 	)
 	marcoModule := marcomodule.NewAppModule(appCodec, app.MarcoKeeper, app.AccountKeeper, app.BankKeeper)

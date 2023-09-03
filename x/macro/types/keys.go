@@ -30,8 +30,8 @@ func KeyPrefix(p string) []byte {
 	return []byte(p)
 }
 
-func GetKeyCollateralAssetData(address sdk.AccAddress, tokenIndex []byte) []byte {
-	bz := append(KeyCollateralAssetData, tokenIndex...)
+func GetKeyCollateralAssetData(address sdk.AccAddress) []byte {
+	bz := append(KeyCollateralAssetData)
 	return append(bz, address...)
 }
 

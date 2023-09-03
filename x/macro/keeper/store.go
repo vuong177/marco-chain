@@ -6,47 +6,41 @@ import (
 )
 
 // GetLastGaugeID returns ID used last time
-func (k Keeper) GetCollateralData(ctx sdk.Context, address sdk.AccAddress, tokenIndex []byte) types.CollateralData {
+func (k Keeper) GetCollateralData(ctx sdk.Context, address sdk.AccAddress) (types.CollateralData, bool) {
 	var collateralData types.CollateralData
 	store := ctx.KVStore(k.storeKey)
 
-	bz := store.Get(types.GetKeyCollateralAssetData(address, tokenIndex))
+	bz := store.Get(types.GetKeyCollateralAssetData(address))
 	if bz == nil {
-		return types.CollateralData{}
+		return types.CollateralData{}, false
 	}
 
 	k.cdc.Unmarshal(bz, &collateralData)
-	return collateralData
+	return collateralData, true
 }
 
 // SetCollateralAsset save collateral asset used by `address`
-func (k Keeper) SetCollateralAsset(ctx sdk.Context, address sdk.AccAddress, tokenIndex []byte, collateralData types.CollateralData) {
+func (k Keeper) SetCollateralAsset(ctx sdk.Context, address sdk.AccAddress, collateralData types.CollateralData) {
 	store := ctx.KVStore(k.storeKey)
 	bz, err := k.cdc.Marshal(&collateralData)
 	if err != nil {
 		panic(err)
 	}
-	collateralRate := k.calculateCollateralRate(ctx, collateralData.CollateralAsset, collateralData.MintedStableCoin)
-	k.setAbsoluteRatePositionSecondaryIndex(ctx, address, collateralRate)
-	store.Set(types.GetKeyCollateralAssetData(address, tokenIndex), bz)
+	store.Set(types.GetKeyCollateralAssetData(address), bz)
 }
 
-// setAbsoluteRatePositionSecondaryIndex save secondary index (key | AbsoluteCollateralRate | tokenIndex | Address| )
-func (k Keeper) setAbsoluteRatePositionSecondaryIndex(ctx sdk.Context, address sdk.AccAddress, collateralRate sdk.Dec) {
-	key := types.GetKeyAddressCollateralAssetSecondaryIndex(address, collateralRate)
-	store := ctx.KVStore(k.storeKey)
+func (k Keeper) calculateCollateralRate(ctx sdk.Context, collateralAsset sdk.Coin, stableCoinAmount sdk.Dec) (sdk.Dec, error) {
+	if stableCoinAmount == sdk.NewDec(0) {
+		return sdk.Dec{}, types.ErrEmptyMintedStableCoin
+	}
 
-	store.Set(key, []byte{})
-}
-
-func (k Keeper) calculateCollateralRate(ctx sdk.Context, collateralAsset sdk.Coin, stableCoin sdk.Dec) sdk.Dec {
 	price := k.GetPrice(ctx, collateralAsset.Denom)
-	collateralRate := stableCoin.Quo(price.MulInt(collateralAsset.Amount))
+	collateralRate := stableCoinAmount.Quo(price.MulInt(collateralAsset.Amount))
 
-	return collateralRate
+	return collateralRate, nil
 }
 
 // TODO : implement oracle module
 func (k Keeper) GetPrice(ctx sdk.Context, denom string) sdk.Dec {
-	return sdk.NewDec(5)
+	return sdk.NewDec(13)
 }
