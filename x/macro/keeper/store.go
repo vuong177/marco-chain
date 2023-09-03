@@ -29,13 +29,25 @@ func (k Keeper) SetCollateralAsset(ctx sdk.Context, address sdk.AccAddress, coll
 	store.Set(types.GetKeyCollateralAssetData(address), bz)
 }
 
-func (k Keeper) calculateCollateralRate(ctx sdk.Context, collateralAsset sdk.Coin, stableCoinAmount sdk.Dec) (sdk.Dec, error) {
+// TODO: need to handle collateralAsset denom, now we consider collateralAsset denom is ATOM.
+func (k Keeper) pricingCollateralAsset(ctx sdk.Context, collateralAssets sdk.Coins) sdk.Dec {
+	collateralAssetValue := sdk.NewDec(0)
+
+	for _, coin := range collateralAssets {
+		price := k.GetPrice(ctx, coin.Denom)
+		collateralAssetValue = collateralAssetValue.Add(price.MulInt(coin.Amount))
+	}
+
+	return collateralAssetValue
+}
+
+func (k Keeper) calculateCollateralRate(ctx sdk.Context, collateralAsset sdk.Coins, stableCoinAmount sdk.Dec) (sdk.Dec, error) {
 	if stableCoinAmount == sdk.NewDec(0) {
 		return sdk.Dec{}, types.ErrEmptyMintedStableCoin
 	}
 
-	price := k.GetPrice(ctx, collateralAsset.Denom)
-	collateralRate := stableCoinAmount.Quo(price.MulInt(collateralAsset.Amount))
+	price := k.pricingCollateralAsset(ctx, collateralAsset)
+	collateralRate := stableCoinAmount.Quo(price)
 
 	return collateralRate, nil
 }

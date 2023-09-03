@@ -79,11 +79,3 @@ func (k Keeper) handleMintStableCoin(ctx sdk.Context, minterAddress sdk.AccAddre
 
 	return nil
 }
-
-// TODO: need to handle collateralAsset denom, now we consider collateralAsset denom is ATOM.
-func (k Keeper) pricingCollateralAsset(ctx sdk.Context, collateralAsset sdk.Coin) sdk.Dec {
-	atomPrice := k.GetPrice(ctx, collateralAsset.Denom)
-	collateralAssetValue := atomPrice.MulInt(collateralAsset.Amount)
-
-	return collateralAssetValue
-}
