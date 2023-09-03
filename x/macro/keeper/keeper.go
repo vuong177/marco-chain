@@ -59,9 +59,18 @@ func (k Keeper) handleMintStableCoin(ctx sdk.Context, minterAddress sdk.AccAddre
 			requestedAmount,
 		),
 	)
+	newMintedStableCoin := collateralData.MintedStableCoin.Add(sdk.NewDecFromInt(requestedAmount))
+	rate, err := k.calculateCollateralRate(ctx, collateralData.CollateralAsset, newMintedStableCoin)
+	if err != nil {
+		return err
+	}
+
+	if types.MinimunCollateralRate.GTE(rate) {
+		return types.ErrSmallRequestCollateralRate
+	}
 
 	// mint uusd and send it to minterAddress
-	err := k.bankKeeper.MintCoins(ctx, types.ModuleName, coins)
+	err = k.bankKeeper.MintCoins(ctx, types.ModuleName, coins)
 	if err != nil {
 		return err
 	}

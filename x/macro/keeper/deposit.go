@@ -14,10 +14,18 @@ func (k Keeper) handleDeposit(ctx sdk.Context, depositAddress sdk.AccAddress, de
 			CollateralAsset:  sdk.NewCoins(depositCoin),
 			MintedStableCoin: sdk.NewDec(0),
 		}
+		err := k.bankKeeper.SendCoinsFromAccountToModule(ctx, depositAddress, types.ModuleName, sdk.NewCoins(depositCoin))
+		if err != nil {
+			return err
+		}
 		k.SetCollateralAsset(ctx, depositAddress, collateralAssetData)
 		return nil
 	}
 
+	err := k.bankKeeper.SendCoinsFromAccountToModule(ctx, depositAddress, types.ModuleName, sdk.NewCoins(depositCoin))
+	if err != nil {
+		return err
+	}
 	// if user already deposit, calculate new collateral rate and set CollateralData
 	newCollateralAssetData := oldCollateralAssetData.CollateralAsset.Add(depositCoin)
 	k.SetCollateralAsset(
