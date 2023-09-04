@@ -2,7 +2,7 @@ package keeper
 
 import (
 	"fmt"
-
+	sdkmath "cosmossdk.io/math"
 	"github.com/cometbft/cometbft/libs/log"
 	"github.com/cosmos/cosmos-sdk/codec"
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
@@ -89,15 +89,46 @@ func (k Keeper) handleMintStableCoin(ctx sdk.Context, minterAddress sdk.AccAddre
 	return nil
 }
 
+// handleRepay handle repay process: user repay uUSD debt to increase collateral ratio
+func (k Keeper) handleRepay(ctx sdk.Context, repayerAddress sdk.AccAddress, amount sdkmath.Int) error {
+	collateralData, found := k.GetCollateralData(ctx, repayerAddress)
+	if !found {
+		return types.ErrEmptyDepositAsset
+	}
+	// check if amount is greater than amount of stablecoin minted, then assign amount to stablecoin minted
+	if amount.GT(collateralData.MintedStableCoin.RoundInt()) {
+		amount = collateralData.MintedStableCoin.RoundInt()
+	}
+	// burn amount of stablecoin in repayer's address
+	coinsBurn := sdk.NewCoins(
+		sdk.NewCoin(
+			types.StableCoinDenom,
+			amount,
+		),
+	)
+	err := k.bankKeeper.SendCoinsFromAccountToModule(ctx, repayerAddress, types.ModuleName, coinsBurn)
+	if err != nil {
+		return fmt.Errorf("could not send coins from account %s to module %s. err: %s", repayerAddress, types.ModuleName, err.Error())
+	}
+	err = k.bankKeeper.BurnCoins(ctx, types.ModuleName, coinsBurn)
+	if err != nil {
+		k.Logger(ctx).Error(fmt.Sprintf("Failed to burn stablecoin in repay process %s", err.Error()))
+		return fmt.Errorf("could not burn %v stablecoin in module account . err: %s", amount ,err.Error())
+	}
+	// decrease amount of stable 
+	collateralData.MintedStableCoin.Sub(sdkmath.LegacyDec(amount))
 
-// Get Collateral data to check user exist
-// Compare amount with amount borrowed of user
-// Burn amount
-// Update reward after repay (this should be a function)
-// Decrease infor of user
-// Decrease total amount of stable coin
-// Emit event
+	k.UpdateReward(ctx, repayerAddress)
 
-func (k Keeper) handleRepay(ctx sdk.Context, accAddress sdk.AccAddress, amount sdk.Int) error {
+	//TODO: emit the event, I think we need to calculate collateral ratio of user after repay here?
+	// Set CollateralAsset
+	k.SetCollateralAsset(ctx, repayerAddress, collateralData)
+
 	return nil
+}
+
+// TODO: Update this function when we implement reward module
+// UpdateReward udpate the reward of user based on the change of amount of stablecoin of user
+func (k *Keeper) UpdateReward(ctx sdk.Context, userAddress sdk.Address) {
+
 }
