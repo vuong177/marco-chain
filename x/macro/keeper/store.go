@@ -47,7 +47,7 @@ func (k Keeper) calculateCollateralRate(ctx sdk.Context, collateralAsset sdk.Coi
 	}
 
 	price := k.pricingCollateralAsset(ctx, collateralAsset)
-	collateralRate := stableCoinAmount.Quo(price)
+	collateralRate := price.Quo(stableCoinAmount)
 
 	return collateralRate, nil
 }
