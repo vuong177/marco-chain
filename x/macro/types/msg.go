@@ -1,6 +1,7 @@
 package types
 
 import (
+	sdkmath "cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
@@ -86,7 +87,7 @@ func (m MsgDeposit) GetSigners() []sdk.AccAddress {
 var _ sdk.Msg = &MsgRepay{}
 
 // MsgRepay creates a message to mint stable coin
-func NewMsgRepay(repayer string, amount sdk.Int) *MsgRepay {
+func NewMsgRepay(repayer string, amount sdkmath.Int) *MsgRepay {
 	return &MsgRepay{
 		repayer, amount,
 	}

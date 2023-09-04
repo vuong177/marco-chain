@@ -35,14 +35,17 @@ func GetTxCmd() *cobra.Command {
 	}
 
 	// this line is used by starport scaffolding # 1
-	cmd.AddCommand()
+	cmd.AddCommand(GetDepositCmd())
+	cmd.AddCommand(GetMintStableCoinCmd())
+	cmd.AddCommand(GetRepayCmd())
+
 	return cmd
 }
 
 func GetDepositCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:     "deposit",
-		Short:   "deposit collateral asset ",
+		Use:     "deposit [coin]",
+		Short:   "Deposit collateral asset ",
 		Args:    cobra.MatchAll(cobra.ExactArgs(1), cobra.OnlyValidArgs),
 		Example: fmt.Sprintf("%s tx macro deposit [coin]", version.AppName),
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -76,8 +79,8 @@ func GetDepositCmd() *cobra.Command {
 
 func GetMintStableCoinCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:     "mint",
-		Short:   "mint new stable coin  ",
+		Use:     "mint [amount]",
+		Short:   "Mint new stable coin  ",
 		Args:    cobra.MatchAll(cobra.ExactArgs(1), cobra.OnlyValidArgs),
 		Example: fmt.Sprintf("%s tx macro mint [amount]", version.AppName),
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -109,11 +112,12 @@ func GetMintStableCoinCmd() *cobra.Command {
 	return cmd
 }
 
-func CmdRepay() *cobra.Command {
+func GetRepayCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "repay [amount]",
 		Short: "Repay debt to increase collateral ratio",
 		Args:  cobra.ExactArgs(1),
+		Example: fmt.Sprintf("%s tx macro repay [amount]", version.AppName),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx, err := client.GetClientTxContext(cmd)
 			if err != nil {

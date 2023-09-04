@@ -99,7 +99,7 @@ func (k Keeper) handleRepay(ctx sdk.Context, repayerAddress sdk.AccAddress, amou
 	if amount.GT(collateralData.MintedStableCoin.RoundInt()) {
 		amount = collateralData.MintedStableCoin.RoundInt()
 	}
-	// burn amount of stablecoin in repayer's address
+	// burn amount of stablecoin of repayer
 	coinsBurn := sdk.NewCoins(
 		sdk.NewCoin(
 			types.StableCoinDenom,
@@ -115,7 +115,7 @@ func (k Keeper) handleRepay(ctx sdk.Context, repayerAddress sdk.AccAddress, amou
 		k.Logger(ctx).Error(fmt.Sprintf("Failed to burn stablecoin in repay process %s", err.Error()))
 		return fmt.Errorf("could not burn %v stablecoin in module account . err: %s", amount ,err.Error())
 	}
-	// decrease amount of stable 
+	// update data of repayer in store
 	collateralData.MintedStableCoin.Sub(sdkmath.LegacyDec(amount))
 
 	k.UpdateReward(ctx, repayerAddress)
