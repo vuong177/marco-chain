@@ -12,4 +12,5 @@ var (
 	ErrSmallRequestCollateralRate = sdkerrors.Register(ModuleName, 1, "request collateral rate too small")
 	ErrEmptyDepositAsset          = sdkerrors.Register(ModuleName, 2, "empty deposit asset")
 	ErrEmptyMintedStableCoin      = sdkerrors.Register(ModuleName, 3, "empty minted stable coin")
+	ErrCanNotFindDataOfUser       = sdkerrors.Register(ModuleName, 4, "can not find data of user")
 )

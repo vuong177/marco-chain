@@ -93,7 +93,7 @@ func (k Keeper) handleMintStableCoin(ctx sdk.Context, minterAddress sdk.AccAddre
 func (k Keeper) handleRepay(ctx sdk.Context, repayerAddress sdk.AccAddress, amount sdkmath.Int) error {
 	collateralData, found := k.GetCollateralData(ctx, repayerAddress)
 	if !found {
-		return types.ErrEmptyDepositAsset
+		return types.ErrCanNotFindDataOfUser
 	}
 	// check if amount is greater than amount of stablecoin minted, then assign amount to stablecoin minted
 	if amount.GT(collateralData.MintedStableCoin.RoundInt()) {
@@ -121,8 +121,8 @@ func (k Keeper) handleRepay(ctx sdk.Context, repayerAddress sdk.AccAddress, amou
 	k.UpdateReward(ctx, repayerAddress)
 
 	//TODO: emit the event, I think we need to calculate collateral ratio of user after repay here?
-	// Set CollateralAsset
-	k.SetCollateralAsset(ctx, repayerAddress, collateralData)
+	// Set CollateralData
+	k.SetCollateralData(ctx, repayerAddress, collateralData)
 
 	return nil
 }
