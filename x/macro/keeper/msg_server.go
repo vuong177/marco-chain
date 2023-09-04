@@ -18,8 +18,30 @@ func NewMsgServerImpl(keeper Keeper) types.MsgServer {
 
 var _ types.MsgServer = msgServer{}
 
+func (s msgServer) Deposit(goCtx context.Context, msg *types.MsgDeposit) (*types.MsgDepositResponse, error) {
+	ctx := sdk.UnwrapSDKContext(goCtx)
+	accAddress, err := sdk.AccAddressFromBech32(msg.FromAddress)
+	if err != nil {
+		return &types.MsgDepositResponse{}, err
+	}
+	err = s.handleDeposit(ctx, accAddress, msg.DepositCoin)
+	if err != nil {
+		return &types.MsgDepositResponse{}, err
+	}
+	return &types.MsgDepositResponse{}, nil
+}
+
 func (s msgServer) MintStableCoin(goCtx context.Context, msg *types.MsgMintStableCoin) (*types.MsgMintStableCoinResponse, error) {
-	return nil, nil
+	ctx := sdk.UnwrapSDKContext(goCtx)
+	accAddress, err := sdk.AccAddressFromBech32(msg.Minter)
+	if err != nil {
+		return &types.MsgMintStableCoinResponse{}, err
+	}
+	err = s.handleMintStableCoin(ctx, accAddress, msg.RequestAmount)
+	if err != nil {
+		return &types.MsgMintStableCoinResponse{}, err
+	}
+	return &types.MsgMintStableCoinResponse{}, nil
 }
 
 func (s msgServer) WithdrawCollateral(goCtx context.Context, msg *types.MsgWithdrawCollateral) (*types.MsgWithdrawCollateralResponse, error) {

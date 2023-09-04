@@ -1,0 +1,23 @@
+syntax = "proto3";
+package macro.macro;
+
+import "gogoproto/gogo.proto";
+import "cosmos/base/v1beta1/coin.proto";
+
+option go_package = "github.com/vuong177/macro/x/macro/types";
+
+// CollateralData defines the macro module's CollateralData state.
+message CollateralData {
+  repeated cosmos.base.v1beta1.Coin collateral_asset = 1 [
+    (gogoproto.nullable) = false,
+    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins",
+    (gogoproto.moretags) = "yaml:\"collateral_asset\""
+  ];
+
+  // minted_stable_coin is the number of minted stable coin that mortgage by assets
+  string minted_stable_coin = 2 [
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.moretags) = "yaml:\"minted_stable_coin\"",
+    (gogoproto.nullable) = false
+  ];
+}
