@@ -9,14 +9,14 @@ import (
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
 	"github.com/vuong177/macro/testutil/sample"
-	marcosimulation "github.com/vuong177/macro/x/macro/simulation"
+	macrosimulation "github.com/vuong177/macro/x/macro/simulation"
 	"github.com/vuong177/macro/x/macro/types"
 )
 
 // avoid unused import issue
 var (
 	_ = sample.AccAddress
-	_ = marcosimulation.FindAccount
+	_ = macrosimulation.FindAccount
 	_ = simulation.MsgEntryKind
 	_ = baseapp.Paramspace
 	_ = rand.Rand{}
@@ -32,11 +32,11 @@ func (AppModule) GenerateGenesisState(simState *module.SimulationState) {
 	for i, acc := range simState.Accounts {
 		accs[i] = acc.Address.String()
 	}
-	marcoGenesis := types.GenesisState{
+	macroGenesis := types.GenesisState{
 		Params: types.DefaultParams(),
 		// this line is used by starport scaffolding # simapp/module/genesisState
 	}
-	simState.GenState[types.ModuleName] = simState.Cdc.MustMarshalJSON(&marcoGenesis)
+	simState.GenState[types.ModuleName] = simState.Cdc.MustMarshalJSON(&macroGenesis)
 }
 
 // RegisterStoreDecoder registers a decoder.

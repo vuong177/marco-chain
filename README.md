@@ -1,1 +1,1 @@
-# marco-chain
+# macro-chain
