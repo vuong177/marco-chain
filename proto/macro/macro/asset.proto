@@ -4,7 +4,7 @@ package macro.macro;
 import "gogoproto/gogo.proto";
 import "cosmos/base/v1beta1/coin.proto";
 
-option go_package = "x/macro/types";
+option go_package = "github.com/vuong177/macro/x/macro/types";
 
 // CollateralData defines the macro module's CollateralData state.
 message CollateralData {

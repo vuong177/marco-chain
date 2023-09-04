@@ -3,7 +3,7 @@ package macro.macro;
 
 import "gogoproto/gogo.proto";
 
-option go_package = "x/macro/types";
+option go_package = "github.com/vuong177/macro/x/macro/types";
 
 // Params defines the parameters for the module.
 message Params {

@@ -4,7 +4,7 @@ package macro.macro;
 import "gogoproto/gogo.proto";
 import "macro/macro/params.proto";
 
-option go_package = "x/macro/types";
+option go_package = "github.com/vuong177/macro/x/macro/types";
 
 // GenesisState defines the macro module's genesis state.
 message GenesisState {
