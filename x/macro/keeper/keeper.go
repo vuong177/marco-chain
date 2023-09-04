@@ -83,8 +83,8 @@ func (k Keeper) handleMintStableCoin(ctx sdk.Context, minterAddress sdk.AccAddre
 	// TODO: need to handle collateralAsset denom, now we consider collateralAsset denom is ATOM.
 	collateralData.MintedStableCoin = collateralData.MintedStableCoin.Add(sdk.NewDecFromInt(requestedAmount))
 
-	// set new SetCollateralAssetData
-	k.SetCollateralAsset(ctx, minterAddress, collateralData)
+	// set new SetCollateralData
+	k.SetCollateralData(ctx, minterAddress, collateralData)
 
 	return nil
 }

@@ -18,7 +18,7 @@ func (k Keeper) handleDeposit(ctx sdk.Context, depositAddress sdk.AccAddress, de
 		if err != nil {
 			return err
 		}
-		k.SetCollateralAsset(ctx, depositAddress, collateralAssetData)
+		k.SetCollateralData(ctx, depositAddress, collateralAssetData)
 		return nil
 	}
 
@@ -27,12 +27,12 @@ func (k Keeper) handleDeposit(ctx sdk.Context, depositAddress sdk.AccAddress, de
 		return err
 	}
 	// if user already deposit, calculate new collateral rate and set CollateralData
-	newCollateralAssetData := oldCollateralAssetData.CollateralAsset.Add(depositCoin)
-	k.SetCollateralAsset(
+	newCollateralData := oldCollateralAssetData.CollateralAsset.Add(depositCoin)
+	k.SetCollateralData(
 		ctx,
 		depositAddress,
 		types.CollateralData{
-			CollateralAsset:  newCollateralAssetData,
+			CollateralAsset:  newCollateralData,
 			MintedStableCoin: oldCollateralAssetData.MintedStableCoin,
 		},
 	)

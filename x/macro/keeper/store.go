@@ -5,7 +5,7 @@ import (
 	"github.com/vuong177/macro/x/macro/types"
 )
 
-// GetLastGaugeID returns ID used last time
+// GetCollateralData get collateral data
 func (k Keeper) GetCollateralData(ctx sdk.Context, address sdk.AccAddress) (types.CollateralData, bool) {
 	var collateralData types.CollateralData
 	store := ctx.KVStore(k.storeKey)
@@ -19,8 +19,8 @@ func (k Keeper) GetCollateralData(ctx sdk.Context, address sdk.AccAddress) (type
 	return collateralData, true
 }
 
-// SetCollateralAsset save collateral asset used by `address`
-func (k Keeper) SetCollateralAsset(ctx sdk.Context, address sdk.AccAddress, collateralData types.CollateralData) {
+// SetCollateralData save collateral data
+func (k Keeper) SetCollateralData(ctx sdk.Context, address sdk.AccAddress, collateralData types.CollateralData) {
 	store := ctx.KVStore(k.storeKey)
 	bz, err := k.cdc.Marshal(&collateralData)
 	if err != nil {
