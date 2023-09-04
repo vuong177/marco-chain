@@ -48,3 +48,16 @@ func (k Keeper) Logger(ctx sdk.Context) log.Logger {
 func (k Keeper) executeMintStableCoin(ctx sdk.Context, collateralAsset sdk.Coin) {
 
 }
+
+
+// Get Collateral data to check user exist
+// Compare amount with amount borrowed of user
+// Burn amount
+// Update reward after repay (this should be a function)
+// Decrease infor of user
+// Decrease total amount of stable coin
+// Emit event
+
+func (k Keeper) handleRepay(ctx sdk.Context, accAddress sdk.AccAddress, amount sdk.Int) error {
+	return nil
+}

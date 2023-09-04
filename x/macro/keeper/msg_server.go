@@ -2,7 +2,7 @@ package keeper
 
 import (
 	"context"
-
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/vuong177/macro/x/macro/types"
 )
 
@@ -24,4 +24,17 @@ func (s msgServer) MintStableCoin(goCtx context.Context, msg *types.MsgMintStabl
 
 func (s msgServer) WithdrawCollateral(goCtx context.Context, msg *types.MsgWithdrawCollateral) (*types.MsgWithdrawCollateralResponse, error) {
 	return nil, nil
+}
+
+func (s msgServer) Repay(goCtx context.Context, msg *types.MsgRepay) (*types.MsgRepayResponse, error) {
+	ctx := sdk.UnwrapSDKContext(goCtx)
+	accAddress, err := sdk.AccAddressFromBech32(msg.Repayer)
+	if err != nil {
+		return &types.MsgRepayResponse{}, err
+	}
+	err = s.handleRepay(ctx, accAddress, msg.Amount)
+	if err != nil {
+		return &types.MsgRepayResponse{}, err
+	}
+	return &types.MsgRepayResponse{}, nil
 }

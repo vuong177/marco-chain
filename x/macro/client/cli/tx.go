@@ -7,8 +7,13 @@ import (
 	"github.com/spf13/cobra"
 
 	"github.com/cosmos/cosmos-sdk/client"
-	// "github.com/cosmos/cosmos-sdk/client/flags"
+	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/vuong177/macro/x/macro/types"
+	"github.com/cosmos/cosmos-sdk/client/tx"
+	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	errorsmod "cosmossdk.io/errors"
+
 )
 
 var (
@@ -31,6 +36,37 @@ func GetTxCmd() *cobra.Command {
 	}
 
 	// this line is used by starport scaffolding # 1
+
+	return cmd
+}
+
+func CmdRepay() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "repay [amount]",
+		Short: "Repay debt to increase collateral ratio",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+			argAmount, found := sdk.NewIntFromString(args[0])
+			if !found {
+				return errorsmod.Wrap(sdkerrors.ErrInvalidType, "can not convert string to int")
+			}
+
+			repayer := clientCtx.GetFromAddress().String()
+			msg := types.NewMsgRepay(
+				repayer,
+				argAmount,
+			)
+			if err := msg.ValidateBasic(); err != nil {
+				return err
+			}
+			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
+		},
+	}
+	flags.AddTxFlagsToCmd(cmd)
 
 	return cmd
 }
