@@ -524,6 +524,7 @@ func New(
 		appCodec,
 		keys[macromoduletypes.StoreKey],
 		keys[macromoduletypes.MemStoreKey],
+		app.BankKeeper,
 		app.GetSubspace(macromoduletypes.ModuleName),
 	)
 	macroModule := macromodule.NewAppModule(appCodec, app.MacroKeeper, app.AccountKeeper, app.BankKeeper)
