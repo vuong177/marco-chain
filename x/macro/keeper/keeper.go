@@ -59,7 +59,7 @@ func (k Keeper) handleMintStableCoin(ctx sdk.Context, minterAddress sdk.AccAddre
 			requestedAmount,
 		),
 	)
-	newMintedStableCoin := collateralData.MintedStableCoin.Add(sdk.NewDecFromInt(requestedAmount))
+	newMintedStableCoin := collateralData.Borrowed.Add(sdk.NewDecFromInt(requestedAmount))
 	rate, err := k.calculateCollateralRate(ctx, collateralData.CollateralAsset, newMintedStableCoin)
 	if err != nil {
 		return err
@@ -81,7 +81,7 @@ func (k Keeper) handleMintStableCoin(ctx sdk.Context, minterAddress sdk.AccAddre
 
 	// save this infomation in module state
 	// TODO: need to handle collateralAsset denom, now we consider collateralAsset denom is ATOM.
-	collateralData.MintedStableCoin = collateralData.MintedStableCoin.Add(sdk.NewDecFromInt(requestedAmount))
+	collateralData.Borrowed = collateralData.Borrowed.Add(sdk.NewDecFromInt(requestedAmount))
 
 	// set new SetCollateralData
 	k.SetCollateralData(ctx, minterAddress, collateralData)
