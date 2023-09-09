@@ -59,7 +59,7 @@ func (k Keeper) handleMintStableCoin(ctx sdk.Context, minterAddress sdk.AccAddre
 			requestedAmount,
 		),
 	)
-	newMintedStableCoin := collateralData.MintedStableCoin.Add(sdk.NewDecFromInt(requestedAmount))
+	newMintedStableCoin := collateralData.Borrowed.Add(sdk.NewDecFromInt(requestedAmount))
 	rate, err := k.calculateCollateralRate(ctx, collateralData.CollateralAsset, newMintedStableCoin)
 	if err != nil {
 		return err
@@ -81,7 +81,7 @@ func (k Keeper) handleMintStableCoin(ctx sdk.Context, minterAddress sdk.AccAddre
 
 	// save this infomation in module state
 	// TODO: need to handle collateralAsset denom, now we consider collateralAsset denom is ATOM.
-	collateralData.MintedStableCoin = collateralData.MintedStableCoin.Add(sdk.NewDecFromInt(requestedAmount))
+	collateralData.Borrowed = collateralData.Borrowed.Add(sdk.NewDecFromInt(requestedAmount))
 
 	// set new SetCollateralData
 	k.SetCollateralData(ctx, minterAddress, collateralData)
@@ -96,8 +96,8 @@ func (k Keeper) handleRepay(ctx sdk.Context, repayerAddress sdk.AccAddress, amou
 		return types.ErrCanNotFindDataOfUser
 	}
 	// check if amount is greater than amount of stablecoin minted, then assign amount to stablecoin minted
-	if amount.GT(collateralData.MintedStableCoin.RoundInt()) {
-		amount = collateralData.MintedStableCoin.RoundInt()
+	if amount.GT(collateralData.Borrowed.RoundInt()) {
+		amount = collateralData.Borrowed.RoundInt()
 	}
 	// burn amount of stablecoin of repayer
 	coinsBurn := sdk.NewCoins(
@@ -116,7 +116,7 @@ func (k Keeper) handleRepay(ctx sdk.Context, repayerAddress sdk.AccAddress, amou
 		return fmt.Errorf("could not burn %v stablecoin in module account . err: %s", amount ,err.Error())
 	}
 	// update data of repayer in store
-	collateralData.MintedStableCoin.Sub(sdkmath.LegacyDec(amount))
+	collateralData.Borrowed.Sub(sdkmath.LegacyDec(amount))
 
 	k.UpdateReward(ctx, repayerAddress)
 

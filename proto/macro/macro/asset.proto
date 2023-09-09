@@ -14,8 +14,7 @@ message CollateralData {
     (gogoproto.moretags) = "yaml:\"collateral_asset\""
   ];
 
-  // minted_stable_coin is the number of minted stable coin that mortgage by assets
-  string minted_stable_coin = 2 [
+  string borrowed = 2 [
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
     (gogoproto.moretags) = "yaml:\"minted_stable_coin\"",
     (gogoproto.nullable) = false

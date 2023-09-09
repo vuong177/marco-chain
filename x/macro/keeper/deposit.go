@@ -12,7 +12,7 @@ func (k Keeper) handleDeposit(ctx sdk.Context, depositAddress sdk.AccAddress, de
 	if !found {
 		collateralAssetData := types.CollateralData{
 			CollateralAsset:  sdk.NewCoins(depositCoin),
-			MintedStableCoin: sdk.NewDec(0),
+			Borrowed: sdk.NewDec(0),
 		}
 		err := k.bankKeeper.SendCoinsFromAccountToModule(ctx, depositAddress, types.ModuleName, sdk.NewCoins(depositCoin))
 		if err != nil {
@@ -33,7 +33,7 @@ func (k Keeper) handleDeposit(ctx sdk.Context, depositAddress sdk.AccAddress, de
 		depositAddress,
 		types.CollateralData{
 			CollateralAsset:  newCollateralData,
-			MintedStableCoin: oldCollateralAssetData.MintedStableCoin,
+			Borrowed: oldCollateralAssetData.Borrowed,
 		},
 	)
 
