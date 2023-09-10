@@ -28,7 +28,7 @@ var (
 // AppModuleBasic
 // ----------------------------------------------------------------------------
 
-// AppModuleBasic implements the AppModuleBasic interface for the feeabs module.
+// AppModuleBasic implements the AppModuleBasic interface for module.
 type AppModuleBasic struct {
 	cdc codec.Codec
 }
@@ -38,7 +38,7 @@ func NewAppModuleBasic(cdc codec.Codec) AppModuleBasic {
 	return AppModuleBasic{cdc: cdc}
 }
 
-// Name return the feeabs module name
+// Name return module name
 func (AppModuleBasic) Name() string {
 	return types.ModuleName
 }
@@ -125,24 +125,24 @@ func (am AppModule) RegisterServices(cfg module.Configurator) {
 
 }
 
-// InitGenesis initial genesis state for feeabs module
+// InitGenesis initial genesis state
 // TODO: need to implement
 func (am AppModule) InitGenesis(ctx sdk.Context, cdc codec.JSONCodec, data json.RawMessage) []abci.ValidatorUpdate {
 	return []abci.ValidatorUpdate{}
 }
 
-// ExportGenesis export feeabs state as raw message for feeabs module
+// ExportGenesis export state as raw message
 // TODO: need to implement
 func (am AppModule) ExportGenesis(ctx sdk.Context, cdc codec.JSONCodec) json.RawMessage {
 	return nil
 }
 
-// BeginBlock returns the begin blocker for the feeabs module.
+// BeginBlock returns the begin blocker
 // TODO: need to implement
 func (am AppModule) BeginBlock(ctx sdk.Context, _ abci.RequestBeginBlock) {
 }
 
-// EndBlock returns the end blocker for the feeabs module. It returns no validator
+// EndBlock returns the end blocker. It returns no validator
 // updates.
 // TODO: need to implement
 func (AppModule) EndBlock(_ sdk.Context, _ abci.RequestEndBlock) []abci.ValidatorUpdate {
