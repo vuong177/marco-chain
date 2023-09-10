@@ -129,15 +129,18 @@ func (am AppModule) RegisterServices(cfg module.Configurator) {
 }
 
 // InitGenesis initial genesis state
-// TODO: need to implement
 func (am AppModule) InitGenesis(ctx sdk.Context, cdc codec.JSONCodec, data json.RawMessage) []abci.ValidatorUpdate {
+	var genesisState types.GenesisState
+	cdc.MustUnmarshalJSON(data, &genesisState)
+	InitGenesis(ctx, am.keeper, genesisState)
+
 	return []abci.ValidatorUpdate{}
 }
 
 // ExportGenesis export state as raw message
-// TODO: need to implement
 func (am AppModule) ExportGenesis(ctx sdk.Context, cdc codec.JSONCodec) json.RawMessage {
-	return nil
+	genState := ExportGenesis(ctx, am.keeper)
+	return cdc.MustMarshalJSON(genState)
 }
 
 // BeginBlock returns the begin blocker
