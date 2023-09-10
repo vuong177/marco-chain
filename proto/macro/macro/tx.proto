@@ -51,3 +51,14 @@ message MsgWithdrawCollateral {
 }
 
 message MsgWithdrawCollateralResponse {}
+
+message MsgRepay{
+  //repayer 
+  string repayer = 1 [(gogoproto.moretags) = "yaml:\"repayer\"" ];
+  string amount = 2 [
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.nullable) = false
+  ];
+}
+
+message MsgRepayResponse{}

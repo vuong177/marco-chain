@@ -12,7 +12,6 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/version"
 
-	// "github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/vuong177/macro/x/macro/types"
 )
 
@@ -36,14 +35,17 @@ func GetTxCmd() *cobra.Command {
 	}
 
 	// this line is used by starport scaffolding # 1
-	cmd.AddCommand()
+	cmd.AddCommand(GetDepositCmd())
+	cmd.AddCommand(GetMintStableCoinCmd())
+	cmd.AddCommand(GetRepayCmd())
+
 	return cmd
 }
 
 func GetDepositCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:     "deposit",
-		Short:   "deposit collateral asset ",
+		Use:     "deposit [coin]",
+		Short:   "Deposit collateral asset ",
 		Args:    cobra.MatchAll(cobra.ExactArgs(1), cobra.OnlyValidArgs),
 		Example: fmt.Sprintf("%s tx macro deposit [coin]", version.AppName),
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -77,8 +79,8 @@ func GetDepositCmd() *cobra.Command {
 
 func GetMintStableCoinCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:     "mint",
-		Short:   "mint new stable coin  ",
+		Use:     "mint [amount]",
+		Short:   "Mint new stable coin  ",
 		Args:    cobra.MatchAll(cobra.ExactArgs(1), cobra.OnlyValidArgs),
 		Example: fmt.Sprintf("%s tx macro mint [amount]", version.AppName),
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -102,6 +104,38 @@ func GetMintStableCoinCmd() *cobra.Command {
 				return err
 			}
 
+			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
+		},
+	}
+	flags.AddTxFlagsToCmd(cmd)
+
+	return cmd
+}
+
+func GetRepayCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "repay [amount]",
+		Short: "Repay debt to increase collateral ratio",
+		Args:  cobra.ExactArgs(1),
+		Example: fmt.Sprintf("%s tx macro repay [amount]", version.AppName),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+			argAmount, ok := sdk.NewIntFromString(args[0])
+			if !ok {
+				return fmt.Errorf("can't parse uusd amount")
+			}
+
+			repayer := clientCtx.GetFromAddress().String()
+			msg := types.NewMsgRepay(
+				repayer,
+				argAmount,
+			)
+			if err := msg.ValidateBasic(); err != nil {
+				return err
+			}
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
 		},
 	}

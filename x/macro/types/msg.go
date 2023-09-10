@@ -1,6 +1,7 @@
 package types
 
 import (
+	sdkmath "cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
@@ -9,6 +10,7 @@ const (
 	TypeMsgMintStable      = "mint_stable_coin"
 	TypeWithdrawCollateral = "withdraw_collateral"
 	TypeMsgDeposit         = "deposit"
+	TypeMsgRepay 		   = "repay"
 )
 
 var _ sdk.Msg = &MsgMintStableCoin{}
@@ -80,4 +82,29 @@ func (m MsgDeposit) GetSignBytes() []byte {
 func (m MsgDeposit) GetSigners() []sdk.AccAddress {
 	from, _ := sdk.AccAddressFromBech32(m.FromAddress)
 	return []sdk.AccAddress{from}
+}
+
+var _ sdk.Msg = &MsgRepay{}
+
+// MsgRepay creates a message to mint stable coin
+func NewMsgRepay(repayer string, amount sdkmath.Int) *MsgRepay {
+	return &MsgRepay{
+		repayer, amount,
+	}
+}
+
+func (m MsgRepay) Route() string { return RouterKey }
+func (m MsgRepay) Type() string  { return TypeMsgRepay }
+
+func (m MsgRepay) ValidateBasic() error {
+	return nil
+}
+
+func (m MsgRepay) GetSignBytes() []byte {
+	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(&m))
+}
+
+func (m MsgRepay) GetSigners() []sdk.AccAddress {
+	minter, _ := sdk.AccAddressFromBech32(m.Repayer)
+	return []sdk.AccAddress{minter}
 }
