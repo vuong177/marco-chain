@@ -5,28 +5,28 @@ import (
 	"github.com/vuong177/macro/x/macro/types"
 )
 
-// GetCollateralData get collateral data
-func (k Keeper) GetCollateralData(ctx sdk.Context, address sdk.AccAddress) (types.CollateralData, bool) {
-	var collateralData types.CollateralData
+// GetBorrowerData get borrower data
+func (k Keeper) GetBorrowerData(ctx sdk.Context, address sdk.AccAddress) (types.BorrowerData, bool) {
+	var borrowerData types.BorrowerData
 	store := ctx.KVStore(k.storeKey)
 
-	bz := store.Get(types.GetKeyCollateralAssetData(address))
+	bz := store.Get(types.GetKeyBorrowerData(address))
 	if bz == nil {
-		return types.CollateralData{}, false
+		return types.BorrowerData{}, false
 	}
 
-	k.cdc.Unmarshal(bz, &collateralData)
-	return collateralData, true
+	k.cdc.Unmarshal(bz, &borrowerData)
+	return borrowerData, true
 }
 
-// SetCollateralData save collateral data
-func (k Keeper) SetCollateralData(ctx sdk.Context, address sdk.AccAddress, collateralData types.CollateralData) {
+// SetBorrowerData save collateral data
+func (k Keeper) SetBorrowerData(ctx sdk.Context, address sdk.AccAddress, borrowerData types.BorrowerData) {
 	store := ctx.KVStore(k.storeKey)
-	bz, err := k.cdc.Marshal(&collateralData)
+	bz, err := k.cdc.Marshal(&borrowerData)
 	if err != nil {
 		panic(err)
 	}
-	store.Set(types.GetKeyCollateralAssetData(address), bz)
+	store.Set(types.GetKeyBorrowerData(address), bz)
 }
 
 // TODO: need to handle collateralAsset denom, now we consider collateralAsset denom is ATOM.

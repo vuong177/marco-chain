@@ -49,7 +49,7 @@ func (k Keeper) Logger(ctx sdk.Context) log.Logger {
 
 // handle first time mint/borrow uusd
 func (k Keeper) handleMintStableCoin(ctx sdk.Context, minterAddress sdk.AccAddress, requestedAmount sdk.Int) error {
-	collateralData, found := k.GetCollateralData(ctx, minterAddress)
+	borrowerData, found := k.GetBorrowerData(ctx, minterAddress)
 	if !found {
 		return types.ErrEmptyDepositAsset
 	}
@@ -59,8 +59,8 @@ func (k Keeper) handleMintStableCoin(ctx sdk.Context, minterAddress sdk.AccAddre
 			requestedAmount,
 		),
 	)
-	newMintedStableCoin := collateralData.Borrowed.Add(sdk.NewDecFromInt(requestedAmount))
-	rate, err := k.calculateCollateralRate(ctx, collateralData.CollateralAsset, newMintedStableCoin)
+	newMintedStableCoin := borrowerData.Borrowed.Add(sdk.NewDecFromInt(requestedAmount))
+	rate, err := k.calculateCollateralRate(ctx, borrowerData.CollateralAsset, newMintedStableCoin)
 	if err != nil {
 		return err
 	}
@@ -81,17 +81,17 @@ func (k Keeper) handleMintStableCoin(ctx sdk.Context, minterAddress sdk.AccAddre
 
 	// save this infomation in module state
 	// TODO: need to handle collateralAsset denom, now we consider collateralAsset denom is ATOM.
-	collateralData.Borrowed = collateralData.Borrowed.Add(sdk.NewDecFromInt(requestedAmount))
+	borrowerData.Borrowed = borrowerData.Borrowed.Add(sdk.NewDecFromInt(requestedAmount))
 
-	// set new SetCollateralData
-	k.SetCollateralData(ctx, minterAddress, collateralData)
+	// set new SetBorrowerData
+	k.SetBorrowerData(ctx, minterAddress, borrowerData)
 
 	return nil
 }
 
 // handleRepay handle repay process: user repay uUSD debt to increase collateral ratio
 func (k Keeper) handleRepay(ctx sdk.Context, repayerAddress sdk.AccAddress, amount sdkmath.Int) error {
-	collateralData, found := k.GetCollateralData(ctx, repayerAddress)
+	collateralData, found := k.GetBorrowerData(ctx, repayerAddress)
 	if !found {
 		return types.ErrCanNotFindDataOfUser
 	}
@@ -122,7 +122,7 @@ func (k Keeper) handleRepay(ctx sdk.Context, repayerAddress sdk.AccAddress, amou
 
 	//TODO: emit the event, I think we need to calculate collateral ratio of user after repay here?
 	// Set CollateralData
-	k.SetCollateralData(ctx, repayerAddress, collateralData)
+	k.SetBorrowerData(ctx, repayerAddress, collateralData)
 
 	return nil
 }

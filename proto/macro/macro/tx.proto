@@ -62,3 +62,9 @@ message MsgRepay{
 }
 
 message MsgRepayResponse{}
+
+message MsgBecomeRedemptionProvider{
+  string redemption_provider = 1 [(gogoproto.moretags) = "yaml:\"redemption_provider\"" ];
+}
+
+message MsgBecomeRedemptionProviderResponse{}
