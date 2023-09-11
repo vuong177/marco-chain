@@ -19,7 +19,7 @@ func (k Keeper) GetBorrowerData(ctx sdk.Context, address sdk.AccAddress) (types.
 	return borrowerData, true
 }
 
-// SetBorrowerData save collateral data
+// SetBorrowerData save borrower data
 func (k Keeper) SetBorrowerData(ctx sdk.Context, address sdk.AccAddress, borrowerData types.BorrowerData) {
 	store := ctx.KVStore(k.storeKey)
 	bz, err := k.cdc.Marshal(&borrowerData)
@@ -27,6 +27,37 @@ func (k Keeper) SetBorrowerData(ctx sdk.Context, address sdk.AccAddress, borrowe
 		panic(err)
 	}
 	store.Set(types.GetKeyBorrowerData(address), bz)
+}
+
+// IterateAllBorrowers iterates through all of the borrowers
+func (k Keeper) IterateAllBorrowers(ctx sdk.Context, fn func(borrower types.BorrowerData) (stop bool)) {
+	store := ctx.KVStore(k.storeKey)
+
+	iterator := sdk.KVStorePrefixIterator(store, types.KeyBorrowerData)
+	defer iterator.Close()
+
+	i := int64(0)	
+	for ; iterator.Valid(); iterator.Next() {
+		borrower := types.BorrowerData{}
+		k.cdc.MustUnmarshal(iterator.Value(), &borrower)
+		stop := fn(borrower)
+		if stop {
+			break
+		}
+		i++
+	}
+}
+
+// GetAllRedemptionProvider returns all redemption providers
+func (k Keeper) GetAllRedemptionProviders(ctx sdk.Context) (borrowers []types.BorrowerData) {
+	k.IterateAllBorrowers(ctx, func(borrower types.BorrowerData) bool {
+		if borrower.IsRedemptionProvider {
+			borrowers = append(borrowers, borrower)
+		}
+		return false
+	})
+
+	return borrowers
 }
 
 // TODO: need to handle collateralAsset denom, now we consider collateralAsset denom is ATOM.

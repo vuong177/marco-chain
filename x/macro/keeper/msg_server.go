@@ -60,3 +60,16 @@ func (s msgServer) Repay(goCtx context.Context, msg *types.MsgRepay) (*types.Msg
 	}
 	return &types.MsgRepayResponse{}, nil
 }
+
+func (s msgServer) BecomeRedemptionProvider(goCtx context.Context, msg *types.MsgBecomeRedemptionProvider) (*types.MsgBecomeRedemptionProvider, error) {
+	ctx := sdk.UnwrapSDKContext(goCtx)
+	accAddress, err := sdk.AccAddressFromBech32(msg.RedemptionProvider)
+	if err != nil {
+		return &types.MsgBecomeRedemptionProvider{}, err
+	}
+	err = s.handleBecomeRedemptionProvide(ctx, accAddress)
+	if err != nil {
+		return &types.MsgBecomeRedemptionProvider{}, err
+	}
+	return &types.MsgBecomeRedemptionProvider{}, nil
+}

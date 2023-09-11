@@ -38,6 +38,7 @@ func GetTxCmd() *cobra.Command {
 	cmd.AddCommand(GetDepositCmd())
 	cmd.AddCommand(GetMintStableCoinCmd())
 	cmd.AddCommand(GetRepayCmd())
+	cmd.AddCommand(GetBecomeRedemptionProviderCmd())
 
 	return cmd
 }
@@ -132,6 +133,32 @@ func GetRepayCmd() *cobra.Command {
 			msg := types.NewMsgRepay(
 				repayer,
 				argAmount,
+			)
+			if err := msg.ValidateBasic(); err != nil {
+				return err
+			}
+			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
+		},
+	}
+	flags.AddTxFlagsToCmd(cmd)
+
+	return cmd
+}
+
+func GetBecomeRedemptionProviderCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "becomeredemptionprovider [amount]",
+		Short: "Become a redemption provider",
+		Args:  cobra.ExactArgs(0),
+		Example: fmt.Sprintf("%s tx macro becomeredemptionprovider", version.AppName),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+			redemption_provider := clientCtx.GetFromAddress().String()
+			msg := types.NewMsgBecomeRedemptionProvider(
+				redemption_provider,
 			)
 			if err := msg.ValidateBasic(); err != nil {
 				return err

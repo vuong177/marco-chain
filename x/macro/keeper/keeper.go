@@ -91,13 +91,13 @@ func (k Keeper) handleMintStableCoin(ctx sdk.Context, minterAddress sdk.AccAddre
 
 // handleRepay handle repay process: user repay uUSD debt to increase collateral ratio
 func (k Keeper) handleRepay(ctx sdk.Context, repayerAddress sdk.AccAddress, amount sdkmath.Int) error {
-	collateralData, found := k.GetBorrowerData(ctx, repayerAddress)
+	borrowerData, found := k.GetBorrowerData(ctx, repayerAddress)
 	if !found {
 		return types.ErrCanNotFindDataOfUser
 	}
 	// check if amount is greater than amount of stablecoin minted, then assign amount to stablecoin minted
-	if amount.GT(collateralData.Borrowed.RoundInt()) {
-		amount = collateralData.Borrowed.RoundInt()
+	if amount.GT(borrowerData.Borrowed.RoundInt()) {
+		amount = borrowerData.Borrowed.RoundInt()
 	}
 	// burn amount of stablecoin of repayer
 	coinsBurn := sdk.NewCoins(
@@ -116,13 +116,26 @@ func (k Keeper) handleRepay(ctx sdk.Context, repayerAddress sdk.AccAddress, amou
 		return fmt.Errorf("could not burn %v stablecoin in module account . err: %s", amount ,err.Error())
 	}
 	// update data of repayer in store
-	collateralData.Borrowed.Sub(sdkmath.LegacyDec(amount))
+	borrowerData.Borrowed.Sub(sdkmath.LegacyDec(amount))
 
 	k.UpdateReward(ctx, repayerAddress)
 
 	//TODO: emit the event, I think we need to calculate collateral ratio of user after repay here?
 	// Set CollateralData
-	k.SetBorrowerData(ctx, repayerAddress, collateralData)
+	k.SetBorrowerData(ctx, repayerAddress, borrowerData)
+
+	return nil
+}
+
+func (k Keeper) handleBecomeRedemptionProvide(ctx sdk.Context, borrower sdk.AccAddress) error {
+	borrowerData, found := k.GetBorrowerData(ctx, borrower)
+	if !found {
+		// TODO: Update name types of errors
+		return types.ErrCanNotFindDataOfUser
+	}
+	// TODO: Is there any condition to become a redemption provider?
+	borrowerData.IsRedemptionProvider = true
+	k.SetBorrowerData(ctx, borrower, borrowerData)
 
 	return nil
 }

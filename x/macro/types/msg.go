@@ -108,3 +108,28 @@ func (m MsgRepay) GetSigners() []sdk.AccAddress {
 	minter, _ := sdk.AccAddressFromBech32(m.Repayer)
 	return []sdk.AccAddress{minter}
 }
+
+var _ sdk.Msg = &MsgBecomeRedemptionProvider{}
+
+// NewMsgBecomeRedemptionProvider creates a message to mint stable coin
+func NewMsgBecomeRedemptionProvider(redemption_provider string) *MsgBecomeRedemptionProvider {
+	return &MsgBecomeRedemptionProvider{
+		redemption_provider,
+	}
+}
+
+func (m MsgBecomeRedemptionProvider) Route() string { return RouterKey }
+func (m MsgBecomeRedemptionProvider) Type() string  { return TypeMsgRepay }
+
+func (m MsgBecomeRedemptionProvider) ValidateBasic() error {
+	return nil
+}
+
+func (m MsgBecomeRedemptionProvider) GetSignBytes() []byte {
+	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(&m))
+}
+
+func (m MsgBecomeRedemptionProvider) GetSigners() []sdk.AccAddress {
+	minter, _ := sdk.AccAddressFromBech32(m.RedemptionProvider)
+	return []sdk.AccAddress{minter}
+}
