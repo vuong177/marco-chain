@@ -1,8 +1,8 @@
 package keeper
 
 import (
-	"fmt"
 	sdkmath "cosmossdk.io/math"
+	"fmt"
 	"github.com/cometbft/cometbft/libs/log"
 	"github.com/cosmos/cosmos-sdk/codec"
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
@@ -113,7 +113,7 @@ func (k Keeper) handleRepay(ctx sdk.Context, repayerAddress sdk.AccAddress, amou
 	err = k.bankKeeper.BurnCoins(ctx, types.ModuleName, coinsBurn)
 	if err != nil {
 		k.Logger(ctx).Error(fmt.Sprintf("Failed to burn stablecoin in repay process %s", err.Error()))
-		return fmt.Errorf("could not burn %v stablecoin in module account . err: %s", amount ,err.Error())
+		return fmt.Errorf("could not burn %v stablecoin in module account . err: %s", amount, err.Error())
 	}
 	// update data of repayer in store
 	borrowerData.Borrowed.Sub(sdkmath.LegacyDec(amount))
@@ -127,6 +127,7 @@ func (k Keeper) handleRepay(ctx sdk.Context, repayerAddress sdk.AccAddress, amou
 	return nil
 }
 
+// handleBecomeRedemptionProvide update data of borrower to become a redemption provider
 func (k Keeper) handleBecomeRedemptionProvide(ctx sdk.Context, borrower sdk.AccAddress) error {
 	borrowerData, found := k.GetBorrowerData(ctx, borrower)
 	if !found {
@@ -138,6 +139,50 @@ func (k Keeper) handleBecomeRedemptionProvide(ctx sdk.Context, borrower sdk.AccA
 	k.SetBorrowerData(ctx, borrower, borrowerData)
 
 	return nil
+}
+
+// Redeemer doesn't have to be a borrower
+
+// handleRedeem handle process when redeemer redeem stablecoin to get stToken
+func (k Keeper) handleRedeem(ctx sdk.Context, redeemer sdk.AccAddress, amount sdkmath.Int, denomRedeem string) error {
+	return nil
+}
+
+// The provider's collateral asset is the highest in list of redemption providers
+// The provider's debt must be equal to or above the requested uUSD amount
+// The provider's collateral ratio must be at least 125%. (partially liquidation rate)
+
+// getRedemptionProvider get the redemption provider for redeem progress
+func (k Keeper) getRedemptionProvider(ctx sdk.Context, amount sdkmath.Int, denomRedeem string) (types.BorrowerData, error) {
+	redemptionProvider := types.BorrowerData{}
+	highestCollateral := sdkmath.NewInt(0)
+
+	redemptionProviders := k.GetAllRedemptionProviders(ctx)
+	if len(redemptionProviders) == 0 {
+		return types.BorrowerData{}, fmt.Errorf("There is no redemption provider now")
+	}
+	seedsOfRedemptionProvider := []types.BorrowerData{}
+	for _, rp := range redemptionProviders {
+		collateral_ratio, _ := k.calculateCollateralRate(ctx, rp.CollateralAsset, rp.Borrowed)
+		if collateral_ratio.LT(types.ThresholdPartialLiquidationRate) {
+			continue
+		}
+		if rp.Borrowed.LT(sdkmath.LegacyDec(amount)) {
+			continue
+		}
+		seedsOfRedemptionProvider = append(seedsOfRedemptionProvider, rp)
+		// TODO: in case we have two redemption providers have the same amount of collateral asset, how to solve it?
+		// maybe we should passing it because after redeem the first one, another one will be the highest
+		if rp.CollateralAsset.AmountOf(denomRedeem).GT(highestCollateral) {
+			highestCollateral = rp.CollateralAsset.AmountOf(denomRedeem)
+			redemptionProvider = rp
+		}
+	}
+	if len(seedsOfRedemptionProvider) == 0 {
+		return types.BorrowerData{}, fmt.Errorf("There is no redemption provider eligible for redeem progress")
+	}
+
+	return redemptionProvider, nil
 }
 
 // TODO: Update this function when we implement reward module

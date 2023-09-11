@@ -73,3 +73,16 @@ func (s msgServer) BecomeRedemptionProvider(goCtx context.Context, msg *types.Ms
 	}
 	return &types.MsgBecomeRedemptionProvider{}, nil
 }
+
+func (s msgServer) Redeem(goCtx context.Context, msg *types.MsgRedeem) (*types.MsgRedeemResponse, error) {
+	ctx := sdk.UnwrapSDKContext(goCtx)
+	accAddress, err := sdk.AccAddressFromBech32(msg.Redeemer)
+	if err != nil {
+		return &types.MsgRedeemResponse{}, err
+	}
+	err = s.handleRedeem(ctx, accAddress, msg.Amount, msg.DenomRedeem)
+	if err != nil {
+		return &types.MsgRedeemResponse{}, err
+	}
+	return &types.MsgRedeemResponse{}, nil
+}
