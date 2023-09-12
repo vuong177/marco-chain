@@ -123,11 +123,11 @@ func GetRepayCmd() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			argAmount, ok := sdk.NewIntFromString(args[0])
+			paidPerson := args[0]
+			argAmount, ok := sdk.NewIntFromString(args[1])
 			if !ok {
 				return fmt.Errorf("can't parse uusd amount")
 			}
-			paidPerson := args[2]
 			repayer := clientCtx.GetFromAddress().String()
 			msg := types.NewMsgRepay(
 				repayer,
