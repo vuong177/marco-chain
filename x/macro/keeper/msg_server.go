@@ -50,11 +50,15 @@ func (s msgServer) WithdrawCollateral(goCtx context.Context, msg *types.MsgWithd
 
 func (s msgServer) Repay(goCtx context.Context, msg *types.MsgRepay) (*types.MsgRepayResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
-	accAddress, err := sdk.AccAddressFromBech32(msg.Repayer)
+	repayerAddress, err := sdk.AccAddressFromBech32(msg.Repayer)
 	if err != nil {
 		return &types.MsgRepayResponse{}, err
 	}
-	err = s.handleRepay(ctx, accAddress, msg.Amount)
+	paidPersonAddress, err := sdk.AccAddressFromBech32(msg.PaidPerson)
+	if err != nil {
+		return &types.MsgRepayResponse{}, err
+	}
+	err = s.handleRepay(ctx, repayerAddress, paidPersonAddress, msg.Amount)
 	if err != nil {
 		return &types.MsgRepayResponse{}, err
 	}

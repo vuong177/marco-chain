@@ -114,10 +114,10 @@ func GetMintStableCoinCmd() *cobra.Command {
 
 func GetRepayCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "repay [amount]",
+		Use:   "repay [paidPerson] [amount]",
 		Short: "Repay debt to increase collateral ratio",
-		Args:  cobra.ExactArgs(1),
-		Example: fmt.Sprintf("%s tx macro repay [amount]", version.AppName),
+		Args:  cobra.ExactArgs(2),
+		Example: fmt.Sprintf("%s tx macro repay [paidPerson] [amount]", version.AppName),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx, err := client.GetClientTxContext(cmd)
 			if err != nil {
@@ -127,10 +127,11 @@ func GetRepayCmd() *cobra.Command {
 			if !ok {
 				return fmt.Errorf("can't parse uusd amount")
 			}
-
+			paidPerson := args[2]
 			repayer := clientCtx.GetFromAddress().String()
 			msg := types.NewMsgRepay(
 				repayer,
+				paidPerson,
 				argAmount,
 			)
 			if err := msg.ValidateBasic(); err != nil {

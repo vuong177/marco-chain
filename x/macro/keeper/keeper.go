@@ -89,15 +89,15 @@ func (k Keeper) handleMintStableCoin(ctx sdk.Context, minterAddress sdk.AccAddre
 	return nil
 }
 
-// handleRepay handle repay process: user repay uUSD debt to increase collateral ratio
-func (k Keeper) handleRepay(ctx sdk.Context, repayerAddress sdk.AccAddress, amount sdkmath.Int) error {
-	collateralData, found := k.GetCollateralData(ctx, repayerAddress)
+// handleRepay handle repay process: repayer pay amount of uUSD for paidPerson's debt to increase paidPerson's collateral ratio
+func (k Keeper) handleRepay(ctx sdk.Context, repayerAddress sdk.AccAddress, paidPersonAddress sdk.AccAddress, amount sdkmath.Int) error {
+	paidPersonCollateralData, found := k.GetCollateralData(ctx, paidPersonAddress)
 	if !found {
-		return types.ErrCanNotFindDataOfUser
+		return types.ErrCanNotFindCollateralData
 	}
-	// check if amount is greater than amount of stablecoin minted, then assign amount to stablecoin minted
-	if amount.GT(collateralData.Borrowed.RoundInt()) {
-		amount = collateralData.Borrowed.RoundInt()
+	// check if amount is greater than amount of stablecoin borrowed
+	if amount.GT(paidPersonCollateralData.Borrowed.RoundInt()) {
+		amount = paidPersonCollateralData.Borrowed.RoundInt()
 	}
 	// burn amount of stablecoin of repayer
 	coinsBurn := sdk.NewCoins(
@@ -115,20 +115,12 @@ func (k Keeper) handleRepay(ctx sdk.Context, repayerAddress sdk.AccAddress, amou
 		k.Logger(ctx).Error(fmt.Sprintf("Failed to burn stablecoin in repay process %s", err.Error()))
 		return fmt.Errorf("could not burn %v stablecoin in module account . err: %s", amount ,err.Error())
 	}
-	// update data of repayer in store
-	collateralData.Borrowed.Sub(sdkmath.LegacyDec(amount))
-
-	k.UpdateReward(ctx, repayerAddress)
+	// update data of paidPerson in store
+	paidPersonCollateralData.Borrowed.Sub(sdkmath.LegacyDec(amount))
 
 	//TODO: emit the event, I think we need to calculate collateral ratio of user after repay here?
 	// Set CollateralData
-	k.SetCollateralData(ctx, repayerAddress, collateralData)
+	k.SetCollateralData(ctx, paidPersonAddress, paidPersonCollateralData)
 
 	return nil
-}
-
-// TODO: Update this function when we implement reward module
-// UpdateReward udpate the reward of user based on the change of amount of stablecoin of user
-func (k *Keeper) UpdateReward(ctx sdk.Context, userAddress sdk.Address) {
-
 }
