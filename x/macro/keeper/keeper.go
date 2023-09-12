@@ -97,6 +97,7 @@ func (k Keeper) handleRepay(ctx sdk.Context, repayerAddress sdk.AccAddress, amou
 	}
 	// check if amount is greater than amount of stablecoin minted, then assign amount to stablecoin minted
 	if amount.GT(borrowerData.Borrowed.RoundInt()) {
+		//TODO: should be add log here to show the information
 		amount = borrowerData.Borrowed.RoundInt()
 	}
 	// burn amount of stablecoin of repayer
@@ -155,7 +156,7 @@ func (k Keeper) handleRedeem(ctx sdk.Context, redeemer sdk.AccAddress, amount sd
 // getRedemptionProvider get the redemption provider for redeem progress
 func (k Keeper) getRedemptionProvider(ctx sdk.Context, amount sdkmath.Int, denomRedeem string) (types.BorrowerData, error) {
 	redemptionProvider := types.BorrowerData{}
-	highestCollateral := sdkmath.NewInt(0)
+	highestCollateralAsset := sdkmath.NewInt(0)
 
 	redemptionProviders := k.GetAllRedemptionProviders(ctx)
 	if len(redemptionProviders) == 0 {
@@ -173,8 +174,8 @@ func (k Keeper) getRedemptionProvider(ctx sdk.Context, amount sdkmath.Int, denom
 		seedsOfRedemptionProvider = append(seedsOfRedemptionProvider, rp)
 		// TODO: in case we have two redemption providers have the same amount of collateral asset, how to solve it?
 		// maybe we should passing it because after redeem the first one, another one will be the highest
-		if rp.CollateralAsset.AmountOf(denomRedeem).GT(highestCollateral) {
-			highestCollateral = rp.CollateralAsset.AmountOf(denomRedeem)
+		if rp.CollateralAsset.AmountOf(denomRedeem).GT(highestCollateralAsset) {
+			highestCollateralAsset = rp.CollateralAsset.AmountOf(denomRedeem)
 			redemptionProvider = rp
 		}
 	}
