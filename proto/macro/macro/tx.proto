@@ -55,7 +55,7 @@ message MsgWithdrawCollateralResponse {}
 message MsgRepay{
   //repayer 
   string repayer = 1 [(gogoproto.moretags) = "yaml:\"repayer\"" ];
-  string paid_person = 2 [(gogoproto.moretags) = "yaml:\"paid_person\"" ];
+  string borrower = 2 [(gogoproto.moretags) = "yaml:\"borrower\"" ];
   string amount = 3 [
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
     (gogoproto.nullable) = false

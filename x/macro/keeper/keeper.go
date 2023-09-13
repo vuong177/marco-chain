@@ -89,15 +89,15 @@ func (k Keeper) handleMintStableCoin(ctx sdk.Context, minterAddress sdk.AccAddre
 	return nil
 }
 
-// handleRepay handle repay process: repayer pay amount of uUSD for paidPerson's debt to increase paidPerson's collateral ratio
-func (k Keeper) handleRepay(ctx sdk.Context, repayerAddress sdk.AccAddress, paidPersonAddress sdk.AccAddress, amount sdkmath.Int) error {
-	paidPersonCollateralData, found := k.GetCollateralData(ctx, paidPersonAddress)
+// handleRepay handle repay process: repayer pay amount of uUSD for borrower's debt to increase borrower's collateral ratio
+func (k Keeper) handleRepay(ctx sdk.Context, repayerAddress sdk.AccAddress, borrowerAddress sdk.AccAddress, amount sdkmath.Int) error {
+	borrowerCollateralData, found := k.GetCollateralData(ctx, borrowerAddress)
 	if !found {
 		return types.ErrCanNotFindCollateralData
 	}
-	// check if amount is greater than amount of stablecoin borrowed
-	if amount.GT(paidPersonCollateralData.Borrowed.RoundInt()) {
-		amount = paidPersonCollateralData.Borrowed.RoundInt()
+	// check if amount repay is greater than amount of stablecoin borrowed
+	if amount.GT(borrowerCollateralData.Borrowed.RoundInt()) {
+		amount = borrowerCollateralData.Borrowed.RoundInt()
 	}
 	// burn amount of stablecoin of repayer
 	coinsBurn := sdk.NewCoins(
@@ -115,12 +115,12 @@ func (k Keeper) handleRepay(ctx sdk.Context, repayerAddress sdk.AccAddress, paid
 		k.Logger(ctx).Error(fmt.Sprintf("Failed to burn stablecoin in repay process %s", err.Error()))
 		return fmt.Errorf("could not burn %v stablecoin in module account . err: %s", amount ,err.Error())
 	}
-	// update data of paidPerson in store
-	paidPersonCollateralData.Borrowed.Sub(sdkmath.LegacyDec(amount))
+	// update data of borrower in store
+	borrowerCollateralData.Borrowed.Sub(sdkmath.LegacyDec(amount))
 
 	//TODO: emit the event, I think we need to calculate collateral ratio of user after repay here?
 	// Set CollateralData
-	k.SetCollateralData(ctx, paidPersonAddress, paidPersonCollateralData)
+	k.SetCollateralData(ctx, borrowerAddress, borrowerCollateralData)
 
 	return nil
 }
