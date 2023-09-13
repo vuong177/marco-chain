@@ -54,11 +54,11 @@ func (s msgServer) Repay(goCtx context.Context, msg *types.MsgRepay) (*types.Msg
 	if err != nil {
 		return &types.MsgRepayResponse{}, err
 	}
-	paidPersonAddress, err := sdk.AccAddressFromBech32(msg.Borrower)
+	borrowerAddress, err := sdk.AccAddressFromBech32(msg.Borrower)
 	if err != nil {
 		return &types.MsgRepayResponse{}, err
 	}
-	err = s.handleRepay(ctx, repayerAddress, paidPersonAddress, msg.Amount)
+	err = s.handleRepay(ctx, repayerAddress, borrowerAddress, msg.Amount)
 	if err != nil {
 		return &types.MsgRepayResponse{}, err
 	}
