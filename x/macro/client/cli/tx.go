@@ -124,8 +124,8 @@ func GetRepayCmd() *cobra.Command {
 				return err
 			}
 			borrower := args[0]
-			amount, ok := sdk.NewIntFromString(args[1])
-			if !ok {
+			amount, err := sdk.NewDecFromStr(args[1])
+			if err != nil {
 				return fmt.Errorf("can't parse uusd amount")
 			}
 			repayer := clientCtx.GetFromAddress().String()

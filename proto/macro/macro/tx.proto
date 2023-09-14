@@ -57,7 +57,7 @@ message MsgRepay{
   string repayer = 1 [(gogoproto.moretags) = "yaml:\"repayer\"" ];
   string borrower = 2 [(gogoproto.moretags) = "yaml:\"borrower\"" ];
   string amount = 3 [
-    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
     (gogoproto.nullable) = false
   ];
 }

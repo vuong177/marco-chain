@@ -90,20 +90,21 @@ func (k Keeper) handleMintStableCoin(ctx sdk.Context, minterAddress sdk.AccAddre
 }
 
 // handleRepay handle repay process: repayer pay amount of uUSD for borrower's debt to increase borrower's collateral ratio
-func (k Keeper) handleRepay(ctx sdk.Context, repayerAddress sdk.AccAddress, borrowerAddress sdk.AccAddress, amount sdkmath.Int) error {
+func (k Keeper) handleRepay(ctx sdk.Context, repayerAddress sdk.AccAddress, borrowerAddress sdk.AccAddress, amount sdkmath.LegacyDec) error {
 	borrowerCollateralData, found := k.GetCollateralData(ctx, borrowerAddress)
 	if !found {
 		return types.ErrCanNotFindCollateralData
 	}
 	// check if amount repay is greater than amount of stablecoin borrowed
-	if amount.GT(borrowerCollateralData.Borrowed.RoundInt()) {
-		amount = borrowerCollateralData.Borrowed.RoundInt()
+	if amount.GT(borrowerCollateralData.Borrowed) {
+		amount = borrowerCollateralData.Borrowed
 	}
 	// burn amount of stablecoin of repayer
+	// round amount up to avoid under charging
 	coinsBurn := sdk.NewCoins(
 		sdk.NewCoin(
 			types.StableCoinDenom,
-			amount,
+			amount.Ceil().TruncateInt(),
 		),
 	)
 	err := k.bankKeeper.SendCoinsFromAccountToModule(ctx, repayerAddress, types.ModuleName, coinsBurn)
@@ -116,7 +117,7 @@ func (k Keeper) handleRepay(ctx sdk.Context, repayerAddress sdk.AccAddress, borr
 		return fmt.Errorf("could not burn %v stablecoin in module account . err: %s", amount ,err.Error())
 	}
 	// update data of borrower in store
-	borrowerCollateralData.Borrowed.Sub(sdkmath.LegacyDec(amount))
+	borrowerCollateralData.Borrowed.Sub(amount)
 
 	//TODO: emit the event, I think we need to calculate collateral ratio of user after repay here?
 	// Set CollateralData
