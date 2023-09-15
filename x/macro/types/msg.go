@@ -87,9 +87,9 @@ func (m MsgDeposit) GetSigners() []sdk.AccAddress {
 var _ sdk.Msg = &MsgRepay{}
 
 // MsgRepay creates a message to mint stable coin
-func NewMsgRepay(repayer string, amount sdkmath.Int) *MsgRepay {
+func NewMsgRepay(repayer string, borrower string, amount sdkmath.LegacyDec) *MsgRepay {
 	return &MsgRepay{
-		repayer, amount,
+		repayer, borrower, amount,
 	}
 }
 
