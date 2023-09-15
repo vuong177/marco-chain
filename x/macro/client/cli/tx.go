@@ -39,6 +39,7 @@ func GetTxCmd() *cobra.Command {
 	cmd.AddCommand(GetMintStableCoinCmd())
 	cmd.AddCommand(GetRepayCmd())
 	cmd.AddCommand(GetBecomeRedemptionProviderCmd())
+	cmd.AddCommand(GetRedeemCmd())
 
 	return cmd
 }
@@ -138,6 +139,7 @@ func GetRepayCmd() *cobra.Command {
 			if err := msg.ValidateBasic(); err != nil {
 				return err
 			}
+
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
 		},
 	}
@@ -164,6 +166,42 @@ func GetBecomeRedemptionProviderCmd() *cobra.Command {
 			if err := msg.ValidateBasic(); err != nil {
 				return err
 			}
+
+			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
+		},
+	}
+	flags.AddTxFlagsToCmd(cmd)
+
+	return cmd
+}
+
+func GetRedeemCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "redeem [amount] [denom_redeem]",
+		Short: "Redeem collateral asset",
+		Args:  cobra.ExactArgs(2),
+		Example: fmt.Sprintf("%s tx macro redeem", version.AppName),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+			amount, err := sdk.NewDecFromStr(args[0])
+			if err != nil {
+				return fmt.Errorf("can't parse uusd amount")
+			}
+			denomRedeem := args[1]
+			redeemer := clientCtx.GetFromAddress().String()
+
+			msg := types.NewMsgRedeem(
+				redeemer,
+				amount,
+				denomRedeem,
+			)
+			if err := msg.ValidateBasic(); err != nil {
+				return err
+			}
+
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
 		},
 	}
