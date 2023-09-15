@@ -14,6 +14,8 @@ func RegisterCodec(cdc *codec.LegacyAmino) {
 	cdc.RegisterConcrete(&MsgWithdrawCollateral{}, "macro/MsgWithdrawCollateral", nil)
 	cdc.RegisterConcrete(&MsgDeposit{}, "macro/MsgDeposit", nil)
 	cdc.RegisterConcrete(&MsgRepay{}, "macro/MsgRepay", nil)
+	cdc.RegisterConcrete(&MsgBecomeRedemptionProvider{}, "macro/MsgBecomeRedemptionProvider", nil)
+	cdc.RegisterConcrete(&MsgRedeem{}, "macro/MsgRedeem", nil)
 	// this line is used by starport scaffolding # 2
 }
 
@@ -24,6 +26,8 @@ func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {
 		&MsgWithdrawCollateral{},
 		&MsgDeposit{},
 		&MsgRepay{},
+		&MsgBecomeRedemptionProvider{},
+		&MsgRedeem{},
 	)
 	// this line is used by starport scaffolding # 3
 

@@ -19,8 +19,8 @@ const (
 )
 
 var (
-	// KeyCollateralAsset defines key for CollateralAsset
-	KeyCollateralAssetData = []byte{0x01}
+	// KeyBorrowerData defines key for BorrowerData
+	KeyBorrowerData = []byte{0x01}
 
 	// KeyCollateralAsset defines key for CollateralAsset
 	KeyCollateralAssetRateSecondaryIndex = []byte{0x02}
@@ -30,8 +30,8 @@ func KeyPrefix(p string) []byte {
 	return []byte(p)
 }
 
-func GetKeyCollateralAssetData(address sdk.AccAddress) []byte {
-	bz := append(KeyCollateralAssetData)
+func GetKeyBorrowerData(address sdk.AccAddress) []byte {
+	bz := append(KeyBorrowerData)
 	return append(bz, address...)
 }
 
