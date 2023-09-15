@@ -90,21 +90,21 @@ func (k Keeper) handleMintStableCoin(ctx sdk.Context, minterAddress sdk.AccAddre
 }
 
 // handleRepay handle repay process: repayer pay amount of uUSD for borrower's debt to increase borrower's collateral ratio
-func (k Keeper) handleRepay(ctx sdk.Context, repayerAddress sdk.AccAddress, borrowerAddress sdk.AccAddress, amount sdkmath.LegacyDec) error {
+func (k Keeper) handleRepay(ctx sdk.Context, repayerAddress sdk.AccAddress, borrowerAddress sdk.AccAddress, uusdAmount sdkmath.LegacyDec) error {
 	borrowerCollateralData, found := k.GetBorrowerData(ctx, borrowerAddress)
 	if !found {
 		return types.ErrCanNotFindCollateralData
 	}
-	// check if amount repay is greater than amount of stablecoin borrowed
-	if amount.GT(borrowerCollateralData.Borrowed) {
-		amount = borrowerCollateralData.Borrowed
+	// check if uusdAmount repay is greater than amount of uusd borrowed
+	if uusdAmount.GT(borrowerCollateralData.Borrowed) {
+		uusdAmount = borrowerCollateralData.Borrowed
 	}
 	// burn amount of stablecoin of repayer
 	// round amount up to avoid under charging
 	coinsBurn := sdk.NewCoins(
 		sdk.NewCoin(
 			types.StableCoinDenom,
-			amount.Ceil().TruncateInt(),
+			uusdAmount.Ceil().TruncateInt(),
 		),
 	)
 	err := k.bankKeeper.SendCoinsFromAccountToModule(ctx, repayerAddress, types.ModuleName, coinsBurn)
@@ -114,10 +114,10 @@ func (k Keeper) handleRepay(ctx sdk.Context, repayerAddress sdk.AccAddress, borr
 	err = k.bankKeeper.BurnCoins(ctx, types.ModuleName, coinsBurn)
 	if err != nil {
 		k.Logger(ctx).Error(fmt.Sprintf("Failed to burn stablecoin in repay process %s", err.Error()))
-		return fmt.Errorf("could not burn %v stablecoin in module account . err: %s", amount ,err.Error())
+		return fmt.Errorf("could not burn %v stablecoin in module account . err: %s", uusdAmount ,err.Error())
 	}
 	// update data of borrower in store
-	borrowerCollateralData.Borrowed.Sub(amount)
+	borrowerCollateralData.Borrowed.Sub(uusdAmount)
 
 	//TODO: emit the event, I think we need to calculate collateral ratio of user after repay here?
 	// Set CollateralData
@@ -143,16 +143,43 @@ func (k Keeper) handleBecomeRedemptionProvide(ctx sdk.Context, borrower sdk.AccA
 // Redeemer doesn't have to be a borrower
 
 // handleRedeem handle process when redeemer redeem stablecoin to get stToken
-func (k Keeper) handleRedeem(ctx sdk.Context, redeemer sdk.AccAddress, amount sdkmath.Int, denomRedeem string) error {
+func (k Keeper) handleRedeem(ctx sdk.Context, redeemer sdk.AccAddress, uusdAmount sdkmath.LegacyDec, denomRedeem string) error {
+	redemptionProvider, err := k.getRedemptionProvider(ctx, uusdAmount, denomRedeem)
+	if err != nil {
+		return err
+	}
+	// redeemer pay redemptionProvider's debt to get stToken
+	err = k.handleRepay(ctx, redeemer, sdk.AccAddress(redemptionProvider.Address), uusdAmount)
+
+	// TODO: Need to check the calculations below
+	// Calculate amount of collateral redeemed with redemption fee  = 0.05%
+	assetPrice := k.GetPrice(ctx, denomRedeem)
+	collateralAmount := uusdAmount.Mul(sdk.MustNewDecFromStr("100").Sub(types.RedemptionFee)).Quo(assetPrice).Quo(sdk.MustNewDecFromStr("100"))
+	collateralAssetRedeemed := sdk.NewCoins(sdk.NewCoin(denomRedeem, collateralAmount.TruncateInt()))
+	redemptionProvider.CollateralAsset = redemptionProvider.CollateralAsset.Sub(collateralAssetRedeemed...)
+	
+	err = k.bankKeeper.SendCoinsFromAccountToModule(ctx, sdk.AccAddress(redemptionProvider.Address), types.ModuleName, collateralAssetRedeemed)
+	if err != nil {
+		return fmt.Errorf("could not send coins from redemption provider %s to module %s. err: %s", redemptionProvider.Address, types.ModuleName, err.Error())
+	}
+	err = k.bankKeeper.SendCoinsFromModuleToAccount(ctx, types.ModuleName, redeemer, collateralAssetRedeemed)
+	if err != nil {
+		return fmt.Errorf("could not send coins from module %s to redeemer %s. err: %s", types.ModuleName, redeemer, err.Error())
+	}
+
+	k.SetBorrowerData(ctx, sdk.AccAddress(redemptionProvider.Address), redemptionProvider)
+
 	return nil
 }
+
+// TODO: Need to discuss the conditions below
 
 // The provider's collateral asset is the highest in list of redemption providers
 // The provider's debt must be equal to or above the requested uUSD amount
 // The provider's collateral ratio must be at least 125%. (partially liquidation rate)
 
 // getRedemptionProvider get the redemption provider for redeem progress
-func (k Keeper) getRedemptionProvider(ctx sdk.Context, amount sdkmath.Int, denomRedeem string) (types.BorrowerData, error) {
+func (k Keeper) getRedemptionProvider(ctx sdk.Context, amount sdkmath.LegacyDec, denomRedeem string) (types.BorrowerData, error) {
 	redemptionProvider := types.BorrowerData{}
 	highestCollateralAsset := sdkmath.NewInt(0)
 

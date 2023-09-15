@@ -8,6 +8,7 @@ var (
 	MinimunCollateralRate           = sdk.NewDecWithPrec(150, 2)
 	MaximumCollateralRate           = sdk.NewDecWithPrec(300, 2)
 	ThresholdPartialLiquidationRate = sdk.NewDecWithPrec(125, 2)
+	RedemptionFee                   = sdk.NewDecWithPrec(5, 3)
 )
 
 const (

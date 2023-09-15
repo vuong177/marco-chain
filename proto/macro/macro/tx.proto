@@ -74,7 +74,7 @@ message MsgRedeem {
   //redeemer
   string redeemer = 1 [(gogoproto.moretags) = "yaml:\"redeemer\"" ];
   string amount = 2 [
-    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
     (gogoproto.nullable) = false
   ];
   string denom_redeem = 3;
