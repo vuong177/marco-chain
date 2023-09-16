@@ -9,4 +9,5 @@ option go_package = "github.com/vuong177/macro/x/prices-aggregator/types";
 // GenesisState defines the macro module's genesis state.
 message GenesisState {
   Params params = 1 [(gogoproto.nullable) = false];
+  string port_id = 2;
 }

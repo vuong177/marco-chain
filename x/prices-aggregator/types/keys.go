@@ -19,3 +19,11 @@ const (
 	// PortID is the default port id that module binds to.
 	PortID = "oracle"
 )
+
+var (
+	PortKey = KeyPrefix("band-oracle-port-")
+)
+
+func KeyPrefix(p string) []byte {
+	return []byte(p)
+}
