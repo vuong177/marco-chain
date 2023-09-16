@@ -18,17 +18,22 @@ type Keeper struct {
 	cdc        codec.BinaryCodec
 	storeKey   storetypes.StoreKey
 	paramSpace paramtypes.Subspace
+	authority  string
 
 	// ibc keeper
-	portKeeper types.PortKeeper
-	// channelKeeper types.ChannelKeeper
-	scopedKeeper types.ScopedKeeper
+	portKeeper    types.PortKeeper
+	channelKeeper types.ChannelKeeper
+	scopedKeeper  types.ScopedKeeper
 }
 
 func NewKeeper(
 	cdc codec.BinaryCodec,
 	storeKey storetypes.StoreKey,
 	ps paramtypes.Subspace,
+	authority string,
+	portKeeper types.PortKeeper,
+	channelKeeper types.ChannelKeeper,
+	scopedKeeper types.ScopedKeeper,
 ) Keeper {
 	// set KeyTable if it has not already been set
 	if !ps.HasKeyTable() {
@@ -36,9 +41,13 @@ func NewKeeper(
 	}
 
 	return Keeper{
-		cdc:        cdc,
-		storeKey:   storeKey,
-		paramSpace: ps,
+		cdc:           cdc,
+		storeKey:      storeKey,
+		paramSpace:    ps,
+		authority:     authority,
+		portKeeper:    portKeeper,
+		channelKeeper: channelKeeper,
+		scopedKeeper:  scopedKeeper,
 	}
 }
 
