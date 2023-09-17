@@ -16,6 +16,7 @@ import (
 
 	abci "github.com/cometbft/cometbft/abci/types"
 
+	"github.com/vuong177/macro/x/prices-aggregator/client/cli"
 	"github.com/vuong177/macro/x/prices-aggregator/keeper"
 	"github.com/vuong177/macro/x/prices-aggregator/types"
 )
@@ -80,15 +81,13 @@ func (AppModuleBasic) RegisterGRPCGatewayRoutes(clientCtx client.Context, serveM
 }
 
 // GetTxCmd returns module's root tx command.
-// TODO: need to implement
 func (AppModuleBasic) GetTxCmd() *cobra.Command {
-	return nil
+	return cli.GetTxCmd()
 }
 
 // GetQueryCmd returns module's root query command.
-// TODO: need to implement
 func (AppModuleBasic) GetQueryCmd() *cobra.Command {
-	return nil
+	return cli.GetQueryCmd()
 }
 
 // ----------------------------------------------------------------------------
