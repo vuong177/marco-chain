@@ -5,17 +5,17 @@ import (
 	"github.com/cosmos/cosmos-sdk/codec/legacy"
 	"github.com/cosmos/cosmos-sdk/codec/types"
 	cryptocodec "github.com/cosmos/cosmos-sdk/crypto/codec"
-	"github.com/cosmos/cosmos-sdk/types/msgservice"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/cosmos-sdk/types/msgservice"
 )
 
 var (
-	amino = codec.NewLegacyAmino()
+	amino     = codec.NewLegacyAmino()
 	ModuleCdc = codec.NewAminoCodec(amino)
 )
 
 func RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
-	legacy.RegisterAminoMsg(cdc, &MsgAddAssetPricesTrackingList{}, "marco/prices-aggregator")
+	legacy.RegisterAminoMsg(cdc, &MsgAddAssetPricesTrackingList{}, "marco/prices-aggregator/AddAssetPricesTrackingList")
 }
 
 func RegisterInterfaces(registry types.InterfaceRegistry) {

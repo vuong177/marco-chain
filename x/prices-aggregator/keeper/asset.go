@@ -1,15 +1,18 @@
 package keeper
 
 import (
+	"encoding/binary"
+	"strings"
+
+	errorsmod "cosmossdk.io/errors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/cosmos/cosmos-sdk/store/prefix"
+	"github.com/vuong177/macro/x/prices-aggregator/types"
 )
 
-// GetCommentCount get the total number of comment
+// GetAssetsCount get the total number of assets
 func (k Keeper) GetAssetsCount(ctx sdk.Context) uint64 {
 	store := ctx.KVStore(k.storeKey)
 	bz := store.Get(types.AssetsCountKey)
-
 	// Count doesn't exist: no element
 	if bz == nil {
 		return 0
@@ -19,6 +22,41 @@ func (k Keeper) GetAssetsCount(ctx sdk.Context) uint64 {
 	return binary.BigEndian.Uint64(bz)
 }
 
-func (k Keeper) AddAsset(ctx sdk.Context, denom string, symbol string) (uint64, error) {
+// SetAssetsCount set the total number of assets
+func (k Keeper) SetAssetsCount(ctx sdk.Context, count uint64) {
+	store := ctx.KVStore(k.storeKey)
+	key := store.Get(types.AssetsCountKey)
 
+	bz := make([]byte, 8)
+	binary.BigEndian.PutUint64(bz, count)
+	store.Set(key, bz)
+}
+
+// AddAsset add new asset to store
+func (k Keeper) AddAsset(ctx sdk.Context, denom string, symbol string) (uint64, error) {
+	symbol = strings.ToUpper(symbol)
+	store := ctx.KVStore(k.storeKey)
+	keyDenom := types.GetAssetByDenomKey(denom)
+	keySymbol := types.GetAssetBySymbolKey(symbol)
+
+	if store.Has(keyDenom) || store.Has(keySymbol) {
+		return 0, errorsmod.Wrapf(types.ErrorDuplicateAsset, "duplicate asset denom")
+	}
+
+	ID := k.GetAssetsCount(ctx)
+
+	asset := types.Asset{
+		Id:     ID,
+		Denom:  denom,
+		Symbol: symbol,
+	}
+
+	bz := k.cdc.MustMarshal(&asset)
+
+	store.Set(keyDenom, bz)
+	store.Set(keySymbol, bz)
+
+	k.SetAssetsCount(ctx, ID+1)
+
+	return ID, nil
 }

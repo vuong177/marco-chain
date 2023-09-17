@@ -21,10 +21,22 @@ const (
 )
 
 var (
-	PortKey = KeyPrefix("band-oracle-port-")
-	AssetsCountKey = KeyPrefix("assets-count-")
+	PortKey                = KeyPrefix("band-oracle-port-")
+	AssetsCountKey         = KeyPrefix("assets-count-")
+	AssetsStoreByDenomKey  = KeyPrefix("assets-store-by-denom-")
+	AssetsStoreBySymbolKey = KeyPrefix("assets-store-by-symbol-")
 )
 
 func KeyPrefix(p string) []byte {
 	return []byte(p)
+}
+
+func GetAssetByDenomKey(denom string) []byte {
+	key := append(AssetsStoreByDenomKey, []byte(denom)...)
+	return key
+}
+
+func GetAssetBySymbolKey(symbol string) []byte {
+	key := append(AssetsStoreBySymbolKey, []byte(symbol)...)
+	return key
 }
