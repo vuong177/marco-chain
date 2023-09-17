@@ -2,7 +2,6 @@ package keeper
 
 import (
 	"context"
-
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/vuong177/macro/x/macro/types"
 )
@@ -47,4 +46,47 @@ func (s msgServer) MintStableCoin(goCtx context.Context, msg *types.MsgMintStabl
 
 func (s msgServer) WithdrawCollateral(goCtx context.Context, msg *types.MsgWithdrawCollateral) (*types.MsgWithdrawCollateralResponse, error) {
 	return nil, nil
+}
+
+func (s msgServer) Repay(goCtx context.Context, msg *types.MsgRepay) (*types.MsgRepayResponse, error) {
+	ctx := sdk.UnwrapSDKContext(goCtx)
+	repayerAddress, err := sdk.AccAddressFromBech32(msg.Repayer)
+	if err != nil {
+		return &types.MsgRepayResponse{}, err
+	}
+	borrowerAddress, err := sdk.AccAddressFromBech32(msg.Borrower)
+	if err != nil {
+		return &types.MsgRepayResponse{}, err
+	}
+	err = s.handleRepay(ctx, repayerAddress, borrowerAddress, msg.Amount)
+	if err != nil {
+		return &types.MsgRepayResponse{}, err
+	}
+	return &types.MsgRepayResponse{}, nil
+}
+
+func (s msgServer) BecomeRedemptionProvider(goCtx context.Context, msg *types.MsgBecomeRedemptionProvider) (*types.MsgBecomeRedemptionProvider, error) {
+	ctx := sdk.UnwrapSDKContext(goCtx)
+	accAddress, err := sdk.AccAddressFromBech32(msg.RedemptionProvider)
+	if err != nil {
+		return &types.MsgBecomeRedemptionProvider{}, err
+	}
+	err = s.handleBecomeRedemptionProvide(ctx, accAddress)
+	if err != nil {
+		return &types.MsgBecomeRedemptionProvider{}, err
+	}
+	return &types.MsgBecomeRedemptionProvider{}, nil
+}
+
+func (s msgServer) Redeem(goCtx context.Context, msg *types.MsgRedeem) (*types.MsgRedeemResponse, error) {
+	ctx := sdk.UnwrapSDKContext(goCtx)
+	accAddress, err := sdk.AccAddressFromBech32(msg.Redeemer)
+	if err != nil {
+		return &types.MsgRedeemResponse{}, err
+	}
+	err = s.handleRedeem(ctx, accAddress, msg.Amount, msg.DenomRedeem)
+	if err != nil {
+		return &types.MsgRedeemResponse{}, err
+	}
+	return &types.MsgRedeemResponse{}, nil
 }

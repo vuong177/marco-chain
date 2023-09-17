@@ -12,7 +12,6 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/version"
 
-	// "github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/vuong177/macro/x/macro/types"
 )
 
@@ -36,14 +35,19 @@ func GetTxCmd() *cobra.Command {
 	}
 
 	// this line is used by starport scaffolding # 1
-	cmd.AddCommand()
+	cmd.AddCommand(GetDepositCmd())
+	cmd.AddCommand(GetMintStableCoinCmd())
+	cmd.AddCommand(GetRepayCmd())
+	cmd.AddCommand(GetBecomeRedemptionProviderCmd())
+	cmd.AddCommand(GetRedeemCmd())
+
 	return cmd
 }
 
 func GetDepositCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:     "deposit",
-		Short:   "deposit collateral asset ",
+		Use:     "deposit [coin]",
+		Short:   "Deposit collateral asset ",
 		Args:    cobra.MatchAll(cobra.ExactArgs(1), cobra.OnlyValidArgs),
 		Example: fmt.Sprintf("%s tx macro deposit [coin]", version.AppName),
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -77,8 +81,8 @@ func GetDepositCmd() *cobra.Command {
 
 func GetMintStableCoinCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:     "mint",
-		Short:   "mint new stable coin  ",
+		Use:     "mint [amount]",
+		Short:   "Mint new stable coin  ",
 		Args:    cobra.MatchAll(cobra.ExactArgs(1), cobra.OnlyValidArgs),
 		Example: fmt.Sprintf("%s tx macro mint [amount]", version.AppName),
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -97,6 +101,102 @@ func GetMintStableCoinCmd() *cobra.Command {
 			msg := types.NewMsgMintStable(
 				minter,
 				amount,
+			)
+			if err := msg.ValidateBasic(); err != nil {
+				return err
+			}
+
+			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
+		},
+	}
+	flags.AddTxFlagsToCmd(cmd)
+
+	return cmd
+}
+
+func GetRepayCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "repay [borrower] [amount]",
+		Short: "Repay debt to increase collateral ratio",
+		Args:  cobra.ExactArgs(2),
+		Example: fmt.Sprintf("%s tx macro repay [borrower] [amount]", version.AppName),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+			borrower := args[0]
+			amount, err := sdk.NewDecFromStr(args[1])
+			if err != nil {
+				return fmt.Errorf("can't parse uusd amount")
+			}
+			repayer := clientCtx.GetFromAddress().String()
+			msg := types.NewMsgRepay(
+				repayer,
+				borrower,
+				amount,
+			)
+			if err := msg.ValidateBasic(); err != nil {
+				return err
+			}
+
+			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
+		},
+	}
+	flags.AddTxFlagsToCmd(cmd)
+
+	return cmd
+}
+
+func GetBecomeRedemptionProviderCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "becomeredemptionprovider [amount]",
+		Short: "Become a redemption provider",
+		Args:  cobra.ExactArgs(0),
+		Example: fmt.Sprintf("%s tx macro becomeredemptionprovider", version.AppName),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+			redemption_provider := clientCtx.GetFromAddress().String()
+			msg := types.NewMsgBecomeRedemptionProvider(
+				redemption_provider,
+			)
+			if err := msg.ValidateBasic(); err != nil {
+				return err
+			}
+
+			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
+		},
+	}
+	flags.AddTxFlagsToCmd(cmd)
+
+	return cmd
+}
+
+func GetRedeemCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "redeem [amount] [denom_redeem]",
+		Short: "Redeem collateral asset",
+		Args:  cobra.ExactArgs(2),
+		Example: fmt.Sprintf("%s tx macro redeem", version.AppName),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+			amount, err := sdk.NewDecFromStr(args[0])
+			if err != nil {
+				return fmt.Errorf("can't parse uusd amount")
+			}
+			denomRedeem := args[1]
+			redeemer := clientCtx.GetFromAddress().String()
+
+			msg := types.NewMsgRedeem(
+				redeemer,
+				amount,
+				denomRedeem,
 			)
 			if err := msg.ValidateBasic(); err != nil {
 				return err

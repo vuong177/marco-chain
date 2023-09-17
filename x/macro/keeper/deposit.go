@@ -7,18 +7,19 @@ import (
 
 func (k Keeper) handleDeposit(ctx sdk.Context, depositAddress sdk.AccAddress, depositCoin sdk.Coin) error {
 	k.validateDepositCoin(ctx, depositCoin.Denom)
-	oldCollateralAssetData, found := k.GetCollateralData(ctx, depositAddress)
+	oldCollateralAssetData, found := k.GetBorrowerData(ctx, depositAddress)
 	// if this's the first time user deposit, add save new CollateralData
 	if !found {
-		collateralAssetData := types.CollateralData{
+		collateralAssetData := types.BorrowerData{
 			CollateralAsset:  sdk.NewCoins(depositCoin),
 			Borrowed: sdk.NewDec(0),
+			IsRedemptionProvider: false,
 		}
 		err := k.bankKeeper.SendCoinsFromAccountToModule(ctx, depositAddress, types.ModuleName, sdk.NewCoins(depositCoin))
 		if err != nil {
 			return err
 		}
-		k.SetCollateralData(ctx, depositAddress, collateralAssetData)
+		k.SetBorrowerData(ctx, depositAddress, collateralAssetData)
 		return nil
 	}
 
@@ -28,12 +29,13 @@ func (k Keeper) handleDeposit(ctx sdk.Context, depositAddress sdk.AccAddress, de
 	}
 	// if user already deposit, calculate new collateral rate and set CollateralData
 	newCollateralData := oldCollateralAssetData.CollateralAsset.Add(depositCoin)
-	k.SetCollateralData(
+	k.SetBorrowerData(
 		ctx,
 		depositAddress,
-		types.CollateralData{
+		types.BorrowerData{
 			CollateralAsset:  newCollateralData,
 			Borrowed: oldCollateralAssetData.Borrowed,
+			IsRedemptionProvider: false,
 		},
 	)
 
