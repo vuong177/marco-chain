@@ -6,6 +6,7 @@ import (
 	"time"
 
 	errorsmod "cosmossdk.io/errors"
+	math "cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/vuong177/macro/x/prices-aggregator/types"
 )
@@ -138,4 +139,20 @@ func (k Keeper) DeleteAsset(ctx sdk.Context, denom string) error {
 	store.Delete(keySymbol)
 
 	return nil
+}
+
+// GetAssetExchangeRates get asset exchange rate
+// TODO: testing
+func (k Keeper) GetAssetExchangeRates(ctx sdk.Context, denom string) (math.LegacyDec, error) {
+	asset, found := k.GetAssetByDenom(ctx, denom)
+	if !found {
+		return sdk.ZeroDec(), types.ErrorAssetNotFound
+	}
+
+	// Check if exchange rate is expired
+	if ctx.BlockTime().After(asset.UpdateTime.Add(asset.AcceptedDuration)) {
+		return asset.ExchangeRates, types.ErrorExchangeRateExpired
+	}
+
+	return asset.ExchangeRates, nil
 }

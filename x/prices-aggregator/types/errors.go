@@ -17,4 +17,5 @@ var (
 	ErrorInvalidOracleResponse           = errors.Register(ModuleName, 10, "invalid oracle response")
 	ErrorInvalidOracleResponseNotSuccess = errors.Register(ModuleName, 11, "oracle response not success")
 	ErrorUpdatedTimeFromPast             = errors.Register(ModuleName, 12, "err asset asset-symbol not found")
+	ErrorExchangeRateExpired             = errors.Register(ModuleName, 13, "err exchange rate expired")
 )
