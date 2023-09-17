@@ -92,3 +92,12 @@ message OracleResponsePacketData {
     // if status if OK.
     bytes result = 7;
 }
+
+message FetchPriceRequest {
+    repeated string symbols = 1;
+    uint64 multiplier = 2;
+}
+  
+message FetchPriceResponse {
+    repeated uint64 rates = 1;
+}

@@ -9,4 +9,6 @@ const (
 	AttributeKeyPacketSequence = "sequence"
 	AttributeKeyAckSuccess     = "success"
 	AttributeKeyAckError       = "error"
+	AttributeClientID          = "clientID"
+	AttributeResolveStatus     = "resolve-status"
 )

@@ -67,3 +67,19 @@ func (k Keeper) GetOracleRequestByClientID(ctx sdk.Context, clientID uint64) (ty
 
 	return oracleRequest, true
 }
+
+// DeleteOracleRequest delete oracle request by client ID
+// TODO: testing
+func (k Keeper) DeleteOracleRequest(ctx sdk.Context, clientID uint64) error {
+	_, found := k.GetOracleRequestByClientID(ctx, clientID)
+	if !found {
+		return types.ErrorOracleRequestNotFound
+	}
+
+	store := ctx.KVStore(k.storeKey)
+	key := types.GetOracleRequestByClientIDKey(clientID)
+
+	store.Delete(key)
+
+	return nil
+}

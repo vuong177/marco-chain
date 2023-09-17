@@ -3,6 +3,7 @@ package keeper
 import (
 	"encoding/binary"
 	"strings"
+	"time"
 
 	errorsmod "cosmossdk.io/errors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -49,9 +50,12 @@ func (k Keeper) AddAsset(ctx sdk.Context, denom string, symbol string) (uint64, 
 	ID := k.GetAssetsCount(ctx)
 
 	asset := types.Asset{
-		Id:     ID,
-		Denom:  denom,
-		Symbol: symbol,
+		Id:               ID,
+		Denom:            denom,
+		Symbol:           symbol,
+		ExchangeRates:    sdk.ZeroDec(),
+		UpdateTime:       time.Unix(0, 0),
+		AcceptedDuration: time.Minute,
 	}
 
 	bz := k.cdc.MustMarshal(&asset)
@@ -62,6 +66,26 @@ func (k Keeper) AddAsset(ctx sdk.Context, denom string, symbol string) (uint64, 
 	k.SetAssetsCount(ctx, ID+1)
 
 	return ID, nil
+}
+
+// AddAsset add set asset to store
+// TODO: testing
+func (k Keeper) SetAsset(ctx sdk.Context, asset types.Asset) error {
+	symbol := strings.ToUpper(asset.Symbol)
+	store := ctx.KVStore(k.storeKey)
+	keyDenom := types.GetAssetByDenomKey(asset.Denom)
+	keySymbol := types.GetAssetBySymbolKey(symbol)
+
+	if !store.Has(keyDenom) || !store.Has(keySymbol) {
+		return types.ErrorAssetNotFound
+	}
+
+	bz := k.cdc.MustMarshal(&asset)
+
+	store.Set(keyDenom, bz)
+	store.Set(keySymbol, bz)
+
+	return nil
 }
 
 // GetAssetByDenom get asset by denom

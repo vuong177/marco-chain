@@ -3,6 +3,7 @@ package prices_aggregator
 import (
 	// "fmt"
 
+	"fmt"
 	"strconv"
 	"strings"
 
@@ -78,7 +79,7 @@ func (im IBCModule) OnChanOpenInit(
 }
 
 // OnChanOpenTry implements the IBCModule interface.
-func (am IBCModule) OnChanOpenTry(
+func (im IBCModule) OnChanOpenTry(
 	ctx sdk.Context,
 	order channeltypes.Order,
 	connectionHops []string,
@@ -88,7 +89,7 @@ func (am IBCModule) OnChanOpenTry(
 	counterparty channeltypes.Counterparty,
 	counterpartyVersion string,
 ) (string, error) {
-	if err := ValidateChannelParams(ctx, am.keeper, order, portID, channelID); err != nil {
+	if err := ValidateChannelParams(ctx, im.keeper, order, portID, channelID); err != nil {
 		return "", err
 	}
 
@@ -96,9 +97,9 @@ func (am IBCModule) OnChanOpenTry(
 	// (ie chainA and chainB both call ChanOpenInit before one of them calls ChanOpenTry)
 	// If module can already authenticate the capability then module already owns it so we don't need to claim
 	// Otherwise, module does not have channel capability and we must claim it from IBC
-	if !am.keeper.AuthenticateCapability(ctx, channelCap, host.ChannelCapabilityPath(portID, channelID)) {
+	if !im.keeper.AuthenticateCapability(ctx, channelCap, host.ChannelCapabilityPath(portID, channelID)) {
 		// Only claim channel capability passed back by IBC module if we do not already own it
-		err := am.keeper.ClaimCapability(ctx, channelCap, host.ChannelCapabilityPath(portID, channelID))
+		err := im.keeper.ClaimCapability(ctx, channelCap, host.ChannelCapabilityPath(portID, channelID))
 		if err != nil {
 			return "", err
 		}
@@ -108,7 +109,7 @@ func (am IBCModule) OnChanOpenTry(
 }
 
 // OnChanOpenAck implements the IBCModule interface.
-func (IBCModule) OnChanOpenAck(
+func (im IBCModule) OnChanOpenAck(
 	ctx sdk.Context,
 	portID,
 	channelID string,
@@ -119,7 +120,7 @@ func (IBCModule) OnChanOpenAck(
 }
 
 // OnChanOpenConfirm implements the IBCModule interface.
-func (IBCModule) OnChanOpenConfirm(
+func (im IBCModule) OnChanOpenConfirm(
 	ctx sdk.Context,
 	portID,
 	channelID string,
@@ -128,7 +129,7 @@ func (IBCModule) OnChanOpenConfirm(
 }
 
 // OnChanCloseInit implements the IBCModule interface.
-func (IBCModule) OnChanCloseInit(
+func (im IBCModule) OnChanCloseInit(
 	ctx sdk.Context,
 	portID,
 	channelID string,
@@ -138,7 +139,7 @@ func (IBCModule) OnChanCloseInit(
 }
 
 // OnChanCloseConfirm implements the IBCModule interface.
-func (IBCModule) OnChanCloseConfirm(
+func (im IBCModule) OnChanCloseConfirm(
 	ctx sdk.Context,
 	portID,
 	channelID string,
@@ -148,16 +149,54 @@ func (IBCModule) OnChanCloseConfirm(
 }
 
 // OnRecvPacket implements the IBCModule interface.
-func (IBCModule) OnRecvPacket(
+func (im IBCModule) OnRecvPacket(
 	ctx sdk.Context,
 	packet channeltypes.Packet,
 	relayer sdk.AccAddress,
 ) ibcexported.Acknowledgement {
-	return nil
+	ack := channeltypes.NewResultAcknowledgement([]byte{byte(1)})
+
+	var oracleResponse types.OracleResponsePacketData
+	var ackErr error
+	if err := types.ModuleCdc.UnmarshalJSON(packet.GetData(), &oracleResponse); err != nil {
+		ackErr = errorsmod.Wrapf(errorstypes.ErrInvalidType, "cannot unmarshal OracleResponsePacketData")
+		ack = channeltypes.NewErrorAcknowledgement(ackErr)
+	}
+
+	// only attempt the application logic if the packet data
+	// was successfully decoded
+	if ack.Success() {
+		err := im.keeper.OnRecvPacket(ctx, oracleResponse)
+		if err != nil {
+			ack = channeltypes.NewErrorAcknowledgement(err)
+			ackErr = err
+		}
+	}
+
+	eventAttributes := []sdk.Attribute{
+		sdk.NewAttribute(sdk.AttributeKeyModule, types.ModuleName),
+		sdk.NewAttribute(types.AttributeClientID, oracleResponse.ClientID),
+		sdk.NewAttribute(types.AttributeResolveStatus, oracleResponse.ResolveStatus.String()),
+	}
+
+	if ackErr != nil {
+		eventAttributes = append(eventAttributes, sdk.NewAttribute(types.AttributeKeyAckError, ackErr.Error()))
+	} else {
+		eventAttributes = append(eventAttributes, sdk.NewAttribute(types.AttributeKeyAckSuccess, fmt.Sprintf("%t", ack.Success())))
+	}
+
+	ctx.EventManager().EmitEvent(
+		sdk.NewEvent(
+			types.EventTypeOracleResponsePacket,
+			eventAttributes...,
+		),
+	)
+
+	return ack
 }
 
 // OnAcknowledgementPacket implements the IBCModule interface.
-func (am IBCModule) OnAcknowledgementPacket(
+func (im IBCModule) OnAcknowledgementPacket(
 	ctx sdk.Context,
 	packet channeltypes.Packet,
 	acknowledgement []byte,
@@ -168,7 +207,7 @@ func (am IBCModule) OnAcknowledgementPacket(
 		return errorsmod.Wrapf(errorstypes.ErrUnknownRequest, "cannot unmarshal packet acknowledgement: %v", err)
 	}
 
-	if err := am.keeper.OnAcknowledgementPacket(ctx, ack, packet); err != nil {
+	if err := im.keeper.OnAcknowledgementPacket(ctx, ack, packet); err != nil {
 		return err
 	}
 
@@ -177,6 +216,7 @@ func (am IBCModule) OnAcknowledgementPacket(
 		ctx.EventManager().EmitEvent(
 			sdk.NewEvent(
 				types.EventTypeOracleRequestPacketAcknowledgement,
+				sdk.NewAttribute(sdk.AttributeKeyModule, types.ModuleName),
 				sdk.NewAttribute(types.AttributeKeyAckSuccess, string(resp.Result)),
 				sdk.NewAttribute(types.AttributeKeyPacketSequence, strconv.FormatUint(packet.Sequence, 10)),
 			),
@@ -185,6 +225,7 @@ func (am IBCModule) OnAcknowledgementPacket(
 		ctx.EventManager().EmitEvent(
 			sdk.NewEvent(
 				types.EventTypeOracleRequestPacketAcknowledgement,
+				sdk.NewAttribute(sdk.AttributeKeyModule, types.ModuleName),
 				sdk.NewAttribute(types.AttributeKeyAckError, resp.Error),
 				sdk.NewAttribute(types.AttributeKeyPacketSequence, strconv.FormatUint(packet.Sequence, 10)),
 			),
@@ -197,7 +238,7 @@ func (am IBCModule) OnAcknowledgementPacket(
 // -------------------------------------------------------------------------------------------------------------------
 
 // OnTimeoutPacket implements the IBCModule interface.
-func (am IBCModule) OnTimeoutPacket(
+func (im IBCModule) OnTimeoutPacket(
 	ctx sdk.Context,
 	packet channeltypes.Packet,
 	relayer sdk.AccAddress,

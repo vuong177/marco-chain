@@ -2,6 +2,8 @@ syntax = "proto3";
 package macro.pricesaggregator;
 
 import "gogoproto/gogo.proto";
+import "google/protobuf/duration.proto";
+import "google/protobuf/timestamp.proto";
 
 option go_package = "github.com/vuong177/macro/x/prices-aggregator/types";
 
@@ -12,4 +14,23 @@ message Asset {
     string denom = 2;
     // symbol of token
     string symbol = 3;
+    // exchange rates asset/usd with multiplier
+    string exchange_rates = 4 [
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.moretags) = "yaml:\"exchange_rates\"",
+    (gogoproto.nullable) = false
+    ];
+    // update_time is the time at which the last exchange_rates updated.
+    google.protobuf.Timestamp update_time = 5 [
+    (gogoproto.stdtime) = true,
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags) = "yaml:\"update_time\""
+    ];
+    // accepted_duration is the period from update_time that exchange_rates is accepted
+    google.protobuf.Duration accepted_duration = 6 [
+    (gogoproto.nullable) = false,
+    (gogoproto.stdduration) = true,
+    (gogoproto.jsontag) = "duration,omitempty",
+    (gogoproto.moretags) = "yaml:\"accepted_duration\""
+    ];
 }
