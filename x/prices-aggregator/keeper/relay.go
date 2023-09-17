@@ -59,7 +59,8 @@ func (k Keeper) OnRecvPacket(ctx sdk.Context, oracleResponse types.OracleRespons
 		// check time
 		resolveTime := time.Unix(oracleResponse.ResolveTime, 0)
 		if resolveTime.Before(asset.UpdateTime) {
-			return types.ErrorUpdatedTimeFromPast
+			k.Logger(ctx).Error("Error resolveTime %v before UpdateTime %v", resolveTime, asset.UpdateTime)
+			continue
 		}
 		// update
 		exchangeRates := sdk.NewDecFromInt(sdk.NewIntFromUint64(fetchPriceResponse.Rates[i])).QuoInt64(int64(fetchPriceRequest.Multiplier))
