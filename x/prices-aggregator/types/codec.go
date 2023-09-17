@@ -2,33 +2,32 @@ package types
 
 import (
 	"github.com/cosmos/cosmos-sdk/codec"
+	"github.com/cosmos/cosmos-sdk/codec/legacy"
 	"github.com/cosmos/cosmos-sdk/codec/types"
 	cryptocodec "github.com/cosmos/cosmos-sdk/crypto/codec"
+	"github.com/cosmos/cosmos-sdk/types/msgservice"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
 var (
 	amino = codec.NewLegacyAmino()
-
-	// AminoCdc references the global x/relationships module codec. Note, the codec should
-	// ONLY be used in certain instances of tests and for JSON encoding as Amino is
-	// still used for that purpose.
-	//
-	// The actual codec used for serialization should be provided to x/relationships and
-	// defined at the application level.
-	AminoCdc = codec.NewAminoCodec(amino)
+	ModuleCdc = codec.NewAminoCodec(amino)
 )
 
-func RegisterCodec(cdc *codec.LegacyAmino) {
-
+func RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
+	legacy.RegisterAminoMsg(cdc, &MsgAddAssetPricesTrackingList{}, "marco/prices-aggregator")
 }
 
 func RegisterInterfaces(registry types.InterfaceRegistry) {
-	registry.RegisterImplementations((*sdk.Msg)(nil), nil)
+	registry.RegisterImplementations(
+		(*sdk.Msg)(nil),
+		&MsgAddAssetPricesTrackingList{},
+	)
+	msgservice.RegisterMsgServiceDesc(registry, &_Msg_serviceDesc)
 }
 
 func init() {
-	RegisterCodec(amino)
+	RegisterLegacyAminoCodec(amino)
 	cryptocodec.RegisterCrypto(amino)
 	sdk.RegisterLegacyAminoCodec(amino)
 }

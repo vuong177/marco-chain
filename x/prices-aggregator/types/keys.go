@@ -22,6 +22,7 @@ const (
 
 var (
 	PortKey = KeyPrefix("band-oracle-port-")
+	AssetsCountKey = KeyPrefix("assets-count-")
 )
 
 func KeyPrefix(p string) []byte {
