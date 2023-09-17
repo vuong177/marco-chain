@@ -27,7 +27,7 @@ func (k Keeper) OnRecvPacket(ctx sdk.Context, oracleResponse types.OracleRespons
 	}
 	k.DeleteOracleRequest(ctx, clientID)
 
-	// Check if oracleResponse valid
+	// Check if oracleResponse succes
 	if oracleResponse.ResolveStatus != types.RESOLVE_STATUS_SUCCESS {
 		return types.ErrorInvalidOracleResponseNotSuccess
 	}
