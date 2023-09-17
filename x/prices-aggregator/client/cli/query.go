@@ -20,7 +20,7 @@ func GetQueryCmd() *cobra.Command {
 		SuggestionsMinimumDistance: 2,
 		RunE:                       client.ValidateCmd,
 	}
-
+	// TODO: Add CLI query
 	cmd.AddCommand()
 	return cmd
 }

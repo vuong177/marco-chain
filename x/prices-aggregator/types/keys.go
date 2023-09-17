@@ -1,5 +1,7 @@
 package types
 
+import "encoding/binary"
+
 const (
 	// ModuleName store the name of module
 	ModuleName = "prices-aggregator"
@@ -21,10 +23,14 @@ const (
 )
 
 var (
-	PortKey                = KeyPrefix("band-oracle-port-")
+	PortKey = KeyPrefix("band-oracle-port-")
+
 	AssetsCountKey         = KeyPrefix("assets-count-")
 	AssetsStoreByDenomKey  = KeyPrefix("assets-store-by-denom-")
 	AssetsStoreBySymbolKey = KeyPrefix("assets-store-by-symbol-")
+
+	ClientIDCountKey        = KeyPrefix("client-id-count-")
+	OracleRequestByClientID = KeyPrefix("oracle-request-by-clientID")
 )
 
 func KeyPrefix(p string) []byte {
@@ -38,5 +44,12 @@ func GetAssetByDenomKey(denom string) []byte {
 
 func GetAssetBySymbolKey(symbol string) []byte {
 	key := append(AssetsStoreBySymbolKey, []byte(symbol)...)
+	return key
+}
+
+func GetOracleRequestByClientIDKey(clientID uint64) []byte {
+	bz := make([]byte, 8)
+	binary.BigEndian.PutUint64(bz, clientID)
+	key := append(OracleRequestByClientID, bz...)
 	return key
 }

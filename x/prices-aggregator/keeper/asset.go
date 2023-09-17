@@ -10,6 +10,7 @@ import (
 )
 
 // GetAssetsCount get the total number of assets
+// TODO: testing
 func (k Keeper) GetAssetsCount(ctx sdk.Context) uint64 {
 	store := ctx.KVStore(k.storeKey)
 	bz := store.Get(types.AssetsCountKey)
@@ -23,16 +24,18 @@ func (k Keeper) GetAssetsCount(ctx sdk.Context) uint64 {
 }
 
 // SetAssetsCount set the total number of assets
+// TODO: testing
 func (k Keeper) SetAssetsCount(ctx sdk.Context, count uint64) {
 	store := ctx.KVStore(k.storeKey)
-	key := store.Get(types.AssetsCountKey)
 
 	bz := make([]byte, 8)
 	binary.BigEndian.PutUint64(bz, count)
-	store.Set(key, bz)
+
+	store.Set(types.AssetsCountKey, bz)
 }
 
 // AddAsset add new asset to store
+// TODO: testing
 func (k Keeper) AddAsset(ctx sdk.Context, denom string, symbol string) (uint64, error) {
 	symbol = strings.ToUpper(symbol)
 	store := ctx.KVStore(k.storeKey)
@@ -61,6 +64,8 @@ func (k Keeper) AddAsset(ctx sdk.Context, denom string, symbol string) (uint64, 
 	return ID, nil
 }
 
+// GetAssetByDenom get asset by denom
+// TODO: testing
 func (k Keeper) GetAssetByDenom(ctx sdk.Context, denom string) (types.Asset, bool) {
 	store := ctx.KVStore(k.storeKey)
 	keyDenom := types.GetAssetByDenomKey(denom)
@@ -76,6 +81,8 @@ func (k Keeper) GetAssetByDenom(ctx sdk.Context, denom string) (types.Asset, boo
 	return asset, true
 }
 
+// GetAssetBySymbol get asset by symbol
+// TODO: testing
 func (k Keeper) GetAssetBySymbol(ctx sdk.Context, symbol string) (types.Asset, bool) {
 	store := ctx.KVStore(k.storeKey)
 	keySymbol := types.GetAssetBySymbolKey(symbol)
@@ -91,6 +98,8 @@ func (k Keeper) GetAssetBySymbol(ctx sdk.Context, symbol string) (types.Asset, b
 	return asset, true
 }
 
+// DeleteAsset delete asset
+// TODO: testing
 func (k Keeper) DeleteAsset(ctx sdk.Context, denom string) error {
 	asset, found := k.GetAssetByDenom(ctx, denom)
 	if !found {
