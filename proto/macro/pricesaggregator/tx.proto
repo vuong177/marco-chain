@@ -9,6 +9,7 @@ option go_package = "github.com/vuong177/macro/x/prices-aggregator/types";
 // Msg defines the transfer middleware Msg service.
 service Msg {
     rpc AddAssetPricesTrackingList(MsgAddAssetPricesTrackingList) returns (MsgAddAssetPricesTrackingListResponse);
+    rpc DeleteAssetPricesTrackingList(MsgDeleteAssetPricesTrackingList) returns (MsgDeleteAssetPricesTrackingListResponse);
 }
 
 message MsgAddAssetPricesTrackingList {
@@ -16,12 +17,24 @@ message MsgAddAssetPricesTrackingList {
     // overwritten).
     string authority = 1 [ (gogoproto.moretags) = "yaml:\"authority\"" ];
     // denom of token on macro chain
-    string denom = 2;
+    string denom = 2 [ (gogoproto.moretags) = "yaml:\"denom\"" ];
     // symbol of token
-    string symbol = 3;
+    string symbol = 3 [ (gogoproto.moretags) = "yaml:\"symbol\"" ];
 }
 
 message MsgAddAssetPricesTrackingListResponse {
     // id of asset on macro chain
     uint64 id = 1;
+}
+
+message MsgDeleteAssetPricesTrackingList {
+    // authority is the address that controls the module (defaults to x/gov unless
+    // overwritten).
+    string authority = 1 [ (gogoproto.moretags) = "yaml:\"authority\"" ];
+    // denom of token on macro chain
+    string denom = 2 [ (gogoproto.moretags) = "yaml:\"denom\"" ];
+}
+
+message MsgDeleteAssetPricesTrackingListResponse {
+    
 }

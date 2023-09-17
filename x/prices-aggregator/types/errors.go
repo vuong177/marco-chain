@@ -10,4 +10,5 @@ var (
 	ErrInvalidVersion        = errors.Register(ModuleName, 3, "invalid version")
 	ErrUnrecognizePacket     = errors.Register(ModuleName, 4, "Unrecognised packet")
 	ErrorDuplicateAsset      = errors.Register(ModuleName, 5, "err duplicate asset")
+	ErrorAssetDenomNotFound  = errors.Register(ModuleName, 6, "err asset asset denom not found")
 )
