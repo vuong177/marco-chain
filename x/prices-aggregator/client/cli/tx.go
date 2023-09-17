@@ -15,6 +15,8 @@ func GetTxCmd() *cobra.Command {
 		SuggestionsMinimumDistance: 2,
 		Short:                      fmt.Sprintf("Tx commands for the %s module", types.ModuleName),
 	}
+
+	// TODO: Add CLI Tx
 	txCmd.AddCommand()
 
 	return txCmd

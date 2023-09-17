@@ -1,0 +1,23 @@
+syntax = "proto3";
+package macro.pricesaggregator;
+
+import "gogoproto/gogo.proto";
+import "google/api/annotations.proto";
+import "macro/pricesaggregator/asset.proto";
+
+option go_package = "github.com/vuong177/macro/x/prices-aggregator/types";
+
+// Query defines the gRPC querier service.
+service Query {
+    rpc QueryAssetByDenom(QueryAssetByDenomRequest) returns (QueryAssetByDenomResponse) {
+        option (google.api.http).get = "/macro/prices-aggregator/assets/{denom}";
+    }
+}
+
+message QueryAssetByDenomRequest {
+    string denom = 1 [ (gogoproto.moretags) = "yaml:\"denom\"" ];
+}
+
+message QueryAssetByDenomResponse {
+    Asset asset = 1 [(gogoproto.nullable) = false];
+}
