@@ -98,3 +98,5 @@ func (k Keeper) OnAcknowledgementPacket(ctx sdk.Context, ack channeltypes.Acknow
 		return nil
 	}
 }
+
+// SendPacket
