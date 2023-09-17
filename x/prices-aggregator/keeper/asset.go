@@ -109,6 +109,7 @@ func (k Keeper) GetAssetByDenom(ctx sdk.Context, denom string) (types.Asset, boo
 // GetAssetBySymbol get asset by symbol
 // TODO: testing
 func (k Keeper) GetAssetBySymbol(ctx sdk.Context, symbol string) (types.Asset, bool) {
+	symbol = strings.ToUpper(symbol)
 	store := ctx.KVStore(k.storeKey)
 	keySymbol := types.GetAssetBySymbolKey(symbol)
 
