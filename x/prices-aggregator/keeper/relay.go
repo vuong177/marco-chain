@@ -32,20 +32,24 @@ func (k Keeper) OnRecvPacket(ctx sdk.Context, oracleResponse types.OracleRespons
 		return types.ErrorInvalidOracleResponseNotSuccess
 	}
 
+	// Get fetch price request
 	var fetchPriceRequest types.FetchPriceRequest
 	if err := utils.Decode(oracleRequest.GetCalldata(), &fetchPriceRequest); err != nil {
 		return errorsmod.Wrap(errorstypes.ErrUnknownRequest, "cannot decode the fetchPriceRequest oracleRequest packet")
 	}
 
+	// Get fetch price response
 	var fetchPriceResponse types.FetchPriceResponse
 	if err := utils.Decode(oracleResponse.GetResult(), &fetchPriceResponse); err != nil {
 		return errorsmod.Wrap(errorstypes.ErrUnknownRequest, "cannot decode the fetchPriceResponse oracleResponse packet")
 	}
 
+	// Check response valid
 	if len(fetchPriceRequest.Symbols) != len(fetchPriceResponse.Rates) {
 		return types.ErrorInvalidOracleResponse
 	}
 
+	// update prices
 	for i, symbol := range fetchPriceRequest.Symbols {
 		// get asset
 		asset, found := k.GetAssetBySymbol(ctx, symbol)
