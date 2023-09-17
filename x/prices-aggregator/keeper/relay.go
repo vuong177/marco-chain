@@ -49,7 +49,7 @@ func (k Keeper) OnRecvPacket(ctx sdk.Context, oracleResponse types.OracleRespons
 		return types.ErrorInvalidOracleResponse
 	}
 
-	// update prices
+	// update exchange rates
 	for i, symbol := range fetchPriceRequest.Symbols {
 		// get asset
 		asset, found := k.GetAssetBySymbol(ctx, symbol)
