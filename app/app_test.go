@@ -5,19 +5,19 @@ import (
 	"os"
 	"testing"
 
-	"github.com/stretchr/testify/require"
+	dbm "github.com/cometbft/cometbft-db"
 	abci "github.com/cometbft/cometbft/abci/types"
 	"github.com/cometbft/cometbft/crypto/secp256k1"
 	"github.com/cometbft/cometbft/libs/log"
 	tmtypes "github.com/cometbft/cometbft/types"
-	dbm "github.com/cometbft/cometbft-db"
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	cosmossecp256k1 "github.com/cosmos/cosmos-sdk/crypto/keys/secp256k1"
 	"github.com/cosmos/cosmos-sdk/testutil/mock"
+	simtestutil "github.com/cosmos/cosmos-sdk/testutil/sims"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
-
+	"github.com/stretchr/testify/require"
 	"github.com/vuong177/macro/app"
 )
 
@@ -56,7 +56,8 @@ func TestMacroExport(t *testing.T) {
 
 	baseapp.SetChainID("macro-1")(macro.BaseApp)
 	genesisState := app.NewDefaultGenesisState(macro.AppCodec())
-	genesisState = app.GenesisStateWithValSet(t, macro, genesisState, valSet, []authtypes.GenesisAccount{acc}, balance)
+	genesisState, err = simtestutil.GenesisStateWithValSet(macro.AppCodec(), genesisState, valSet, []authtypes.GenesisAccount{acc}, balance)
+	require.NoError(t, err)
 
 	stateBytes, err := json.MarshalIndent(genesisState, "", "  ")
 	require.NoError(t, err)
@@ -73,14 +74,14 @@ func TestMacroExport(t *testing.T) {
 
 	// Making a new app object with the db, so that initchain hasn't been called
 	app2 := app.New(log.NewTMLogger(log.NewSyncWriter(os.Stdout)),
-	db,
-	nil,
-	true,
-	map[int64]bool{},
-	app.DefaultNodeHome,
-	0,
-	app.MakeEncodingConfig(),
-	app.EmptyAppOptions{},
+		db,
+		nil,
+		true,
+		map[int64]bool{},
+		app.DefaultNodeHome,
+		0,
+		app.MakeEncodingConfig(),
+		app.EmptyAppOptions{},
 	)
 	_, err = app2.ExportAppStateAndValidators(false, []string{}, []string{})
 	require.NoError(t, err, "ExportAppStateAndValidators should not have an error")
