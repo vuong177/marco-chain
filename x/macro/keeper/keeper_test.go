@@ -86,6 +86,20 @@ func (suite *KeeperTestSuite) TestHandleRepay() {
 			balanceOfRepayer:   sdkmath.NewIntFromUint64(100),
 			expectedErr:        true,
 		},
+		{
+			name: "Err: could not send coins from repayer to module",
+			amountBorrowed: sdkmath.LegacyMustNewDecFromStr("101"),
+			balanceOfRepayer: sdkmath.NewIntFromUint64(100),
+			amountRepay: sdkmath.LegacyMustNewDecFromStr("101"),
+			expectedErr: true,
+		},
+		{
+			name: "Successful",
+			amountBorrowed: sdkmath.LegacyMustNewDecFromStr("100"),
+			balanceOfRepayer: sdkmath.NewIntFromUint64(100),
+			amountRepay: sdkmath.LegacyMustNewDecFromStr("100"),
+			expectedErr: false,
+		},
 	}
 	for _, tc := range testcases {
 		suite.Run(tc.name, func() {
