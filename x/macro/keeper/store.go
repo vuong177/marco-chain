@@ -20,7 +20,6 @@ func (k Keeper) GetBorrowerData(ctx sdk.Context, address sdk.AccAddress) (types.
 }
 
 // SetBorrowerData save borrower data
-// TODO: BorrowerData included address of borrower so we can update the code below
 func (k Keeper) SetBorrowerData(ctx sdk.Context, address sdk.AccAddress, borrowerData types.BorrowerData) {
 	store := ctx.KVStore(k.storeKey)
 	bz, err := k.cdc.Marshal(&borrowerData)
