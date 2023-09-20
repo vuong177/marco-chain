@@ -11,6 +11,7 @@ func (k Keeper) handleDeposit(ctx sdk.Context, depositAddress sdk.AccAddress, de
 	// if this's the first time user deposit, add save new CollateralData
 	if !found {
 		collateralAssetData := types.BorrowerData{
+			Address: depositAddress.String(),
 			CollateralAsset:  sdk.NewCoins(depositCoin),
 			Borrowed: sdk.NewDec(0),
 			IsRedemptionProvider: false,
@@ -19,7 +20,7 @@ func (k Keeper) handleDeposit(ctx sdk.Context, depositAddress sdk.AccAddress, de
 		if err != nil {
 			return err
 		}
-		k.SetBorrowerData(ctx, depositAddress, collateralAssetData)
+		k.SetBorrowerData(ctx, collateralAssetData)
 		return nil
 	}
 
@@ -31,8 +32,8 @@ func (k Keeper) handleDeposit(ctx sdk.Context, depositAddress sdk.AccAddress, de
 	newCollateralData := oldCollateralAssetData.CollateralAsset.Add(depositCoin)
 	k.SetBorrowerData(
 		ctx,
-		depositAddress,
 		types.BorrowerData{
+			Address: string(depositAddress),
 			CollateralAsset:  newCollateralData,
 			Borrowed: oldCollateralAssetData.Borrowed,
 			IsRedemptionProvider: false,
