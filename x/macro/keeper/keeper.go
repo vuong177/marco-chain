@@ -89,10 +89,12 @@ func (k Keeper) handleMintStableCoin(ctx sdk.Context, minterAddress sdk.AccAddre
 	return nil
 }
 
-// handleRepay handle repay process: repayer pay amount of uUSD for borrower's debt to increase borrower's collateral ratio
-func (k Keeper) handleRepay(ctx sdk.Context, repayerAddress sdk.AccAddress, borrowerAddress sdk.AccAddress, uusdAmount sdkmath.LegacyDec) error {
+// HandleRepay handle repay process: repayer pay amount of uUSD for borrower's debt to increase borrower's collateral ratio
+func (k Keeper) HandleRepay(ctx sdk.Context, repayerAddress sdk.AccAddress, borrowerAddress sdk.AccAddress, uusdAmount sdkmath.LegacyDec) error {
 	borrowerCollateralData, found := k.GetBorrowerData(ctx, borrowerAddress)
 	if !found {
+		// TODO: I think we should change to panic here because we set data when user borrowed uUSD 
+		// in the first time so if the error appears it means we face an error of store
 		return types.ErrCanNotFindCollateralData
 	}
 	// check if uusdAmount repay is greater than amount of uusd borrowed
@@ -149,7 +151,7 @@ func (k Keeper) handleRedeem(ctx sdk.Context, redeemer sdk.AccAddress, uusdAmoun
 		return err
 	}
 	// redeemer pay redemptionProvider's debt to get stToken
-	err = k.handleRepay(ctx, redeemer, sdk.AccAddress(redemptionProvider.Address), uusdAmount)
+	err = k.HandleRepay(ctx, redeemer, sdk.AccAddress(redemptionProvider.Address), uusdAmount)
 
 	// TODO: Need to check the calculations below
 	// Calculate amount of collateral redeemed with redemption fee  = 0.05%
