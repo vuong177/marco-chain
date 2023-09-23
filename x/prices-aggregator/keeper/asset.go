@@ -124,6 +124,21 @@ func (k Keeper) GetAssetBySymbol(ctx sdk.Context, symbol string) (types.Asset, b
 	return asset, true
 }
 
+// IterateHostZone iterates over the hostzone .
+func (k Keeper) IterateAssetList(ctx sdk.Context, cb func(types.Asset) (stop bool)) {
+	store := ctx.KVStore(k.storeKey)
+	iterator := sdk.KVStorePrefixIterator(store, types.AssetsStoreByDenomKey)
+
+	defer iterator.Close()
+	for ; iterator.Valid(); iterator.Next() {
+		var asset types.Asset
+		k.cdc.MustUnmarshal(iterator.Value(), &asset)
+		if cb(asset) {
+			break
+		}
+	}
+}
+
 // DeleteAsset delete asset
 // TODO: testing
 func (k Keeper) DeleteAsset(ctx sdk.Context, denom string) error {

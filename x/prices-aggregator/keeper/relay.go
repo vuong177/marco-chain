@@ -125,30 +125,27 @@ func (k Keeper) SendPacket(ctx sdk.Context, oracleRequest types.OracleRequestPac
 }
 
 func (k Keeper) handleSendOracleRequest(ctx sdk.Context) (uint64, error) {
+	params := k.GetParams(ctx)
 	// Get oracleRequest ClientID
 	clientID := k.GetNextClientID(ctx)
 	// Create calldata
 	var symbol []string
-	assets := k.assetKeeper.GetAssets(ctx)
-	for _, asset := range assets {
-		if asset.IsOraclePriceRequired {
-			symbol = append(symbol, asset.Name)
-		}
-	}
-
-	encodedCallData := utils.MustEncode(types.FetchPriceCallData{Symbols: symbol, Multiplier: 1000000})
+	k.IterateAssetList(ctx, func(asset types.Asset) (stop bool) {
+		symbol = append(symbol, asset.Symbol)
+		return false
+	})
+	encodedCallData := utils.MustEncode(types.FetchPriceRequest{Symbols: symbol, Multiplier: 1000000})
 	// Create OracleRequest packet
 	oracleRequest := types.OracleRequestPacketData{
-		ClientID: strconv.FormatUint(clientID, 10),
+		ClientID:       strconv.FormatUint(clientID, 10),
 		OracleScriptID: 1,
-		CallData: encodedCallData,
-		AskCount:, 
-		MinCount:,
-		FeeLimit:,
-		PrepareGas:,
-		ExecuteGas:,
+		Calldata:       encodedCallData,
+		AskCount:       params.AskCount,
+		MinCount:       params.MinCount,
+		FeeLimit:       params.FeeLimit,
+		PrepareGas:     params.PrepareGas,
+		ExecuteGas:     params.ExecuteGas,
 	}
 
-	// Send packet
-	return nil
+	return k.SendPacket(ctx, oracleRequest, types.PortID, params.ChannelId)
 }

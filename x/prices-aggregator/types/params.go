@@ -14,6 +14,7 @@ var (
 	KeyFeeLimit   = []byte("FeeLimit")
 	KeyPrepareGas = []byte("PrepareGas")
 	KeyExecuteGas = []byte("ExecuteGas")
+	KeyChannelID  = []byte("ChannelID")
 )
 
 var _ paramtypes.ParamSet = &Params{}
@@ -41,6 +42,7 @@ func (p *Params) ParamSetPairs() paramtypes.ParamSetPairs {
 		paramtypes.NewParamSetPair(KeyFeeLimit, &p.FeeLimit, validateFeeLimit),
 		paramtypes.NewParamSetPair(KeyPrepareGas, &p.PrepareGas, validateUint64),
 		paramtypes.NewParamSetPair(KeyExecuteGas, &p.ExecuteGas, validateUint64),
+		paramtypes.NewParamSetPair(KeyChannelID, &p.ChannelId, validateString),
 	}
 }
 
@@ -61,11 +63,21 @@ func (p Params) Validate() error {
 	if err := validateFeeLimit(p.FeeLimit); err != nil {
 		return err
 	}
+	if err := validateString(p.ChannelId); err != nil {
+		return err
+	}
 	return nil
 }
 
 func validateUint64(i interface{}) error {
 	if _, ok := i.(uint64); !ok {
+		return fmt.Errorf("invalid parameter type: %T", i)
+	}
+	return nil
+}
+
+func validateString(i interface{}) error {
+	if _, ok := i.(string); !ok {
 		return fmt.Errorf("invalid parameter type: %T", i)
 	}
 	return nil
