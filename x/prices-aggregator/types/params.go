@@ -9,6 +9,9 @@ import (
 
 // Parameter keys store keys.
 var (
+	Int64Zero = int64(0)
+	Int64Five = int64(5)
+
 	KeyAskCount   = []byte("AskCount")
 	KeyMinCount   = []byte("MinCount")
 	KeyFeeLimit   = []byte("FeeLimit")
