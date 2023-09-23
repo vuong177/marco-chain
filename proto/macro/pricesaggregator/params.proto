@@ -2,8 +2,18 @@ syntax = "proto3";
 package macro.pricesaggregator;
 
 import "gogoproto/gogo.proto";
+import "cosmos/base/v1beta1/coin.proto";
 
 option go_package = "github.com/vuong177/macro/x/prices-aggregator/types";
 
 // Params defines the parameters for the module.
-message Params {}
+message Params {
+    uint64 ask_count = 1;
+    uint64 min_count = 2;
+    repeated cosmos.base.v1beta1.Coin fee_limit = 3 [
+        (gogoproto.nullable) = false,
+        (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"
+    ];
+    uint64 prepare_gas = 4;
+    uint64 execute_gas = 5;
+}

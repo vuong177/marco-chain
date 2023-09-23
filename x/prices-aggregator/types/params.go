@@ -1,10 +1,22 @@
 package types
 
 import (
+	fmt "fmt"
+
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 )
 
-var _ paramtypes.ParamSet = (*Params)(nil)
+// Parameter keys store keys.
+var (
+	KeyAskCount   = []byte("AskCount")
+	KeyMinCount   = []byte("MinCount")
+	KeyFeeLimit   = []byte("FeeLimit")
+	KeyPrepareGas = []byte("PrepareGas")
+	KeyExecuteGas = []byte("ExecuteGas")
+)
+
+var _ paramtypes.ParamSet = &Params{}
 
 // ParamKeyTable the param key table for launch module
 func ParamKeyTable() paramtypes.KeyTable {
@@ -23,10 +35,51 @@ func DefaultParams() Params {
 
 // ParamSetPairs get the params.ParamSet
 func (p *Params) ParamSetPairs() paramtypes.ParamSetPairs {
-	return paramtypes.ParamSetPairs{}
+	return paramtypes.ParamSetPairs{
+		paramtypes.NewParamSetPair(KeyAskCount, &p.AskCount, validateUint64),
+		paramtypes.NewParamSetPair(KeyMinCount, &p.MinCount, validateUint64),
+		paramtypes.NewParamSetPair(KeyFeeLimit, &p.FeeLimit, validateFeeLimit),
+		paramtypes.NewParamSetPair(KeyPrepareGas, &p.PrepareGas, validateUint64),
+		paramtypes.NewParamSetPair(KeyExecuteGas, &p.ExecuteGas, validateUint64),
+	}
 }
 
 // Validate validates the set of params
 func (p Params) Validate() error {
+	if err := validateUint64(p.AskCount); err != nil {
+		return err
+	}
+	if err := validateUint64(p.MinCount); err != nil {
+		return err
+	}
+	if err := validateUint64(p.PrepareGas); err != nil {
+		return err
+	}
+	if err := validateUint64(p.ExecuteGas); err != nil {
+		return err
+	}
+	if err := validateFeeLimit(p.FeeLimit); err != nil {
+		return err
+	}
+	return nil
+}
+
+func validateUint64(i interface{}) error {
+	if _, ok := i.(uint64); !ok {
+		return fmt.Errorf("invalid parameter type: %T", i)
+	}
+	return nil
+}
+
+func validateFeeLimit(i interface{}) error {
+	v, ok := i.(sdk.Coins)
+	if !ok {
+		return fmt.Errorf("invalid parameter type: %T", i)
+	}
+
+	if err := v.Validate(); err != nil {
+		return err
+	}
+
 	return nil
 }

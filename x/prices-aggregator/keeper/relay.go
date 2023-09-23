@@ -7,7 +7,9 @@ import (
 	errorsmod "cosmossdk.io/errors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	errorstypes "github.com/cosmos/cosmos-sdk/types/errors"
+	clienttypes "github.com/cosmos/ibc-go/v7/modules/core/02-client/types"
 	channeltypes "github.com/cosmos/ibc-go/v7/modules/core/04-channel/types"
+	host "github.com/cosmos/ibc-go/v7/modules/core/24-host"
 	"github.com/vuong177/macro/x/prices-aggregator/types"
 	utils "github.com/vuong177/macro/x/prices-aggregator/utils"
 )
@@ -94,10 +96,59 @@ func (k Keeper) OnAcknowledgementPacket(ctx sdk.Context, ack channeltypes.Acknow
 		k.SetOracleRequestByClientID(ctx, oracleRequest)
 		return nil
 	default:
-		// the acknowledgement succeeded on the receiving chain so nothing
-		// needs to be executed and no error needs to be returned
 		return nil
 	}
 }
 
-// SendPacket
+// SendPacket send oracle request packet
+func (k Keeper) SendPacket(ctx sdk.Context, oracleRequest types.OracleRequestPacketData, sourcePort string, sourceChannel string) (uint64, error) {
+	channelCap, ok := k.scopedKeeper.GetCapability(ctx, host.ChannelCapabilityPath(sourcePort, sourceChannel))
+	if !ok {
+		return 0, errorsmod.Wrap(channeltypes.ErrChannelCapabilityNotFound, "module does not own channel capability")
+	}
+	timeoutTimestamp := ctx.BlockTime().Add(time.Minute * 5).UnixNano()
+
+	sequence, err := k.channelKeeper.SendPacket(
+		ctx,
+		channelCap,
+		sourcePort,
+		sourceChannel,
+		clienttypes.ZeroHeight(),
+		uint64(timeoutTimestamp),
+		oracleRequest.GetBytes(),
+	)
+	if err != nil {
+		return 0, err
+	}
+
+	return sequence, nil
+}
+
+func (k Keeper) handleSendOracleRequest(ctx sdk.Context) (uint64, error) {
+	// Get oracleRequest ClientID
+	clientID := k.GetNextClientID(ctx)
+	// Create calldata
+	var symbol []string
+	assets := k.assetKeeper.GetAssets(ctx)
+	for _, asset := range assets {
+		if asset.IsOraclePriceRequired {
+			symbol = append(symbol, asset.Name)
+		}
+	}
+
+	encodedCallData := utils.MustEncode(types.FetchPriceCallData{Symbols: symbol, Multiplier: 1000000})
+	// Create OracleRequest packet
+	oracleRequest := types.OracleRequestPacketData{
+		ClientID: strconv.FormatUint(clientID, 10),
+		OracleScriptID: 1,
+		CallData: encodedCallData,
+		AskCount:, 
+		MinCount:,
+		FeeLimit:,
+		PrepareGas:,
+		ExecuteGas:,
+	}
+
+	// Send packet
+	return nil
+}
