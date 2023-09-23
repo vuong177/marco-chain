@@ -147,5 +147,12 @@ func (k Keeper) handleSendOracleRequest(ctx sdk.Context) (uint64, error) {
 		ExecuteGas:     params.ExecuteGas,
 	}
 
-	return k.SendPacket(ctx, oracleRequest, types.PortID, params.ChannelId)
+	seq, err := k.SendPacket(ctx, oracleRequest, types.PortID, params.ChannelId)
+	if err != nil {
+		return seq, err
+	}
+
+	k.SetClientIDCount(ctx, clientID+1)
+
+	return seq, nil
 }
