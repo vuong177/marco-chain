@@ -138,7 +138,7 @@ func (k Keeper) handleSendOracleRequest(ctx sdk.Context) (uint64, error) {
 	// Create OracleRequest packet
 	oracleRequest := types.OracleRequestPacketData{
 		ClientID:       strconv.FormatUint(clientID, 10),
-		OracleScriptID: 1,
+		OracleScriptID: params.OracleScriptId,
 		Calldata:       encodedCallData,
 		AskCount:       params.AskCount,
 		MinCount:       params.MinCount,

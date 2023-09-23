@@ -12,6 +12,7 @@ var (
 	Int64Zero = int64(0)
 	Int64Five = int64(5)
 
+	KeyScriptsID  = []byte("OracleScriptsID")
 	KeyAskCount   = []byte("AskCount")
 	KeyMinCount   = []byte("MinCount")
 	KeyFeeLimit   = []byte("FeeLimit")
@@ -40,6 +41,7 @@ func DefaultParams() Params {
 // ParamSetPairs get the params.ParamSet
 func (p *Params) ParamSetPairs() paramtypes.ParamSetPairs {
 	return paramtypes.ParamSetPairs{
+		paramtypes.NewParamSetPair(KeyScriptsID, &p.OracleScriptId, validateUint64),
 		paramtypes.NewParamSetPair(KeyAskCount, &p.AskCount, validateUint64),
 		paramtypes.NewParamSetPair(KeyMinCount, &p.MinCount, validateUint64),
 		paramtypes.NewParamSetPair(KeyFeeLimit, &p.FeeLimit, validateFeeLimit),
@@ -51,6 +53,9 @@ func (p *Params) ParamSetPairs() paramtypes.ParamSetPairs {
 
 // Validate validates the set of params
 func (p Params) Validate() error {
+	if err := validateUint64(p.OracleScriptId); err != nil {
+		return err
+	}
 	if err := validateUint64(p.AskCount); err != nil {
 		return err
 	}
