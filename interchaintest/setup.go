@@ -8,8 +8,8 @@ import (
 )
 
 var (
-	MacroMainRepo   = "ghcr.io/notional-labs/Macro"
-	MacroICTestRepo = "ghcr.io/notional-labs/Macro-ictest"
+	MacroMainRepo   = "ghcr.io/notional-labs/macro"
+	MacroICTestRepo = "ghcr.io/notional-labs/macro-ictest"
 
 	repo, version = GetDockerImageInfo()
 
