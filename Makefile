@@ -119,3 +119,20 @@ proto-lint:
 	@echo "🤖 Running protobuf linter..."
 	@$(protoImage) buf lint --error-format=json
 	@echo "✅ Completed protobuf linting!"
+
+###############################################################################
+###                             Interchain test                             ###
+###############################################################################
+
+# Executes start chain tests via interchaintest
+ictest-start-cosmos:
+	cd interchaintest && go test -race -v -run TestStartMacro .
+
+# Executes IBC tests via interchaintest
+ictest-ibc:
+	cd interchaintest && go test -timeout=25m -race -v -run TestMacroPicassoIBCTransfer .
+
+# Executes all tests via interchaintest after compling a local image as juno:local
+ictest-all: ictest-start-cosmos ictest-ibc
+
+.PHONY: ictest-start-cosmos ictest-ibc ictest-all
