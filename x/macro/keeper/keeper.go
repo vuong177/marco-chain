@@ -84,7 +84,7 @@ func (k Keeper) handleMintStableCoin(ctx sdk.Context, minterAddress sdk.AccAddre
 	borrowerData.Borrowed = borrowerData.Borrowed.Add(sdk.NewDecFromInt(requestedAmount))
 
 	// set new SetBorrowerData
-	k.SetBorrowerData(ctx, minterAddress, borrowerData)
+	k.SetBorrowerData(ctx, borrowerData)
 
 	return nil
 }
@@ -121,7 +121,7 @@ func (k Keeper) handleRepay(ctx sdk.Context, repayerAddress sdk.AccAddress, borr
 
 	//TODO: emit the event, I think we need to calculate collateral ratio of user after repay here?
 	// Set CollateralData
-	k.SetBorrowerData(ctx, borrowerAddress, borrowerCollateralData)
+	k.SetBorrowerData(ctx, borrowerCollateralData)
 
 	return nil
 }
@@ -135,7 +135,7 @@ func (k Keeper) handleBecomeRedemptionProvide(ctx sdk.Context, borrower sdk.AccA
 	}
 	// TODO: Is there any condition to become a redemption provider?
 	borrowerData.IsRedemptionProvider = true
-	k.SetBorrowerData(ctx, borrower, borrowerData)
+	k.SetBorrowerData(ctx, borrowerData)
 
 	return nil
 }
@@ -167,7 +167,7 @@ func (k Keeper) handleRedeem(ctx sdk.Context, redeemer sdk.AccAddress, uusdAmoun
 		return fmt.Errorf("could not send coins from module %s to redeemer %s. err: %s", types.ModuleName, redeemer, err.Error())
 	}
 
-	k.SetBorrowerData(ctx, sdk.AccAddress(redemptionProvider.Address), redemptionProvider)
+	k.SetBorrowerData(ctx, redemptionProvider)
 
 	return nil
 }

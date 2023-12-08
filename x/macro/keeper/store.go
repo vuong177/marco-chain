@@ -20,13 +20,13 @@ func (k Keeper) GetBorrowerData(ctx sdk.Context, address sdk.AccAddress) (types.
 }
 
 // SetBorrowerData save borrower data
-func (k Keeper) SetBorrowerData(ctx sdk.Context, address sdk.AccAddress, borrowerData types.BorrowerData) {
+func (k Keeper) SetBorrowerData(ctx sdk.Context, borrowerData types.BorrowerData) {
 	store := ctx.KVStore(k.storeKey)
 	bz, err := k.cdc.Marshal(&borrowerData)
 	if err != nil {
 		panic(err)
 	}
-	store.Set(types.GetKeyBorrowerData(address), bz)
+	store.Set(types.GetKeyBorrowerData(sdk.AccAddress(borrowerData.Address)), bz)
 }
 
 // IterateAllBorrowers iterates through all of the borrowers
