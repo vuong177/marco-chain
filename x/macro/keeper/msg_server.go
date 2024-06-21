@@ -58,7 +58,7 @@ func (s msgServer) Repay(goCtx context.Context, msg *types.MsgRepay) (*types.Msg
 	if err != nil {
 		return &types.MsgRepayResponse{}, err
 	}
-	err = s.handleRepay(ctx, repayerAddress, borrowerAddress, msg.Amount)
+	err = s.HandleRepay(ctx, repayerAddress, borrowerAddress, msg.Amount)
 	if err != nil {
 		return &types.MsgRepayResponse{}, err
 	}
